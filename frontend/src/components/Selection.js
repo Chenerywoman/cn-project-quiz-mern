@@ -1,16 +1,21 @@
-import React, {useState} from 'react';
+import React from 'react';
+
 import '../App.css';
 
-const Register = () => {
-    const [category, setCategory] = useState();
-    const [difficulty, setDifficulty] = useState("");
+const Register = (props) => {
+    const {
+        updateCategory, 
+        updateDifficulty,
+        redirect
+    } = props;
 
     const formHandler = async (event) => {
         event.preventDefault();
-
-        console.log(category);
-        console.log(difficulty);
+        console.log("form handled");
+        redirect(); //Not working
     };
+
+
 
     return (
         <div>
@@ -19,7 +24,7 @@ const Register = () => {
             <form onSubmit={formHandler}>
 
                 <label>Category: </label>
-                <select required name="category" onChange={(e) => setCategory(e.target.value)}>
+                <select required name="category" onChange={(e) => updateCategory(e.target.value)}>
                     <option value="9">General Knowledge</option>
                     <option value="10">Books</option>
                     <option value="11">Film</option>
@@ -47,7 +52,7 @@ const Register = () => {
 
                 </select> <br />
                 <label>Difficulty: </label>
-                <select required name="difficulty" onChange={(e) => setDifficulty(e.target.value)}>
+                <select required name="difficulty" onChange={(e) => updateDifficulty(e.target.value)}>
                     <option value="easy">Easy</option>
                     <option value="medium">Medium</option>
                     <option value="hard">Hard</option>
