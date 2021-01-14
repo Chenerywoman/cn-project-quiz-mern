@@ -4,12 +4,17 @@ import axios from 'axios';
 
 const Quiz = () => {
 
-    const [questions, setQuestions] = useState([])
-    const [category, setCategory] = useState([])
+    const [questions, setQuestions] = useState([]);
+
+    // this will be passed down from App state in future iteration
+    const [category, setCategory] = useState('')
+
+    // this will be passed down from App state in future iteration
+    const [level, setLevel] = useState('')
 
     const scrambleAnswers = (questions) => {
 
-        const questionandAnswers = questions.reduce((acc, curr) => {
+        const questionandAnswers = questions.reduce((acc, curr, ind) => {
     
             let answers = [{answer: curr.correct_answer, correct: true}, {answer: curr.incorrect_answers[0], correct:false}, {answer: curr.incorrect_answers[1], correct:false}, {answer: curr.incorrect_answers[2], correct:false}];
             let mixedAnswers = [];
@@ -27,7 +32,7 @@ const Quiz = () => {
     
             }
     
-            acc.push({question: curr.question, answers: mixedAnswers});
+            acc.push({number: `Question${ind}`, question: curr.question, answers: mixedAnswers});
            return acc;
     
         }, [])
@@ -41,15 +46,11 @@ const Quiz = () => {
         try {
             const response = await axios.get('https://opentdb.com/api.php?amount=10&category=10&difficulty=easy&type=multiple');
 
-            let receivedQuestions = [...response.data.results];
-            // console.log(receivedQuestions)
-
-            let questionsAndScrambledAnswers = scrambleAnswers(receivedQuestions);
-            console.log('questions and scrambled answers');
-            console.log(questionsAndScrambledAnswers);
+            let questionsAndScrambledAnswers = scrambleAnswers(response.data.results);
     
             setQuestions(questionsAndScrambledAnswers);
-            setCategory(receivedQuestions[0].category);
+            setCategory(response.data.results[0].category);
+            setLevel(response.data.results[0].difficulty);
 
 
         } catch (error) {
@@ -65,16 +66,17 @@ const Quiz = () => {
       <div>
         <h1>Quiz Page</h1>
         <h2>Category:{category} </h2>
+        <h2>Difficulty:{level}</h2>
             <form>
                 {questions.map((question, ind) => {
                     return (
                             <div key={ind} >
                                 <p> {question.question} </p>
-                                {question.answers.map((answer, ind) => {
+                                {question.answers.map((answer, ind, arr) => {
                                     return(
                                         <div key={ind}>
-                                            <label htmlFor={ind}>{answer.answer}</label>
-                                            <input type="radio" name={ind} value={answer.correct} />
+                                            <label htmlFor={question.number}>{answer.answer}</label>
+                                            <input type="radio" name={question.number} value={answer.correct} />
                                         </div>
                                     )
                                 })}
