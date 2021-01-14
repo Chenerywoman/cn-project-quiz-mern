@@ -3,21 +3,22 @@ import axios from 'axios';
 
 
 const Profile = () => {
-    const [users, setUsers] = useState();
-    const [results, setResults] = useState();
-
-
-    const fetchData = async () => {
-        const response = await axios.get('/api/profile');
-        console.log(response.data.users.name);
-        console.log(response.data.results.time);
-        setUsers(response.data.users);
-        setResults(response.data.results);
-    }
+    const [user, setUser] = useState({});
+    const [result, setResult] = useState({});
 
     useEffect(() => {
         fetchData()
-    }, [])
+    }, []);
+
+    const fetchData = async () => {
+        const response = await axios.get('/profile');
+        setUser(response.data.users);
+        console.log(response.data.users);
+        setResult(response.data.results);
+        console.log(response.data.results);
+
+    }
+
 
     return (
         <div>
@@ -28,55 +29,55 @@ const Profile = () => {
                     <h3>Your Information</h3>
 
                     <h5>Name: </h5>
-                    <p>{users.name}</p>
+                    <p>{user.name}</p>
 
                     <h5>Email: </h5>
-                    <p>{users.email}</p>
+                    <p>{user.email}</p>
                 </div>  
 
                 <div id="stats-info">
                     <h3>Your Stats</h3>
 
                     <h5>Quizzes Taken</h5>
-                    <p>{results.totalQuiz}</p>
+                    <p>{result.totalQuiz}</p>
 
                     <h5>Total Score: </h5>
-                    <p>{results.totalScore}</p>
+                    <p>{result.totalScore}</p>
 
                     <h5>Average Score: </h5>
-                    <p>{results.AvScore}</p>
+                    <p>{result.AvScore}</p>
 
                     <h5>Fastest Time: </h5>
-                    <p>{results.fastTime}</p>
+                    <p>{result.fastTime}</p>
 
                     <h5>Average Time: </h5>
-                    <p>{results.avTime}</p>
+                    <p>{result.avTime}</p>
 
                     <h5>Ranking: </h5>
-                    <p>{results.position}</p>
+                    <p>{result.position}</p>
                 </div>    
             </div>
 
             <div id="right-side" >
                 <div id="leaderboard-info">{/*Require if statement*/}
                     <h2>Congratulations!</h2>
-                    <h5>You are {results.topPosition} on the Leaderboard</h5>
+                    <h5>You are {result.topPosition} on the Leaderboard</h5>
                 </div>  
 
                 <div id="last-quiz-info">
                     <h3>The Results of Your Last Quiz are:</h3>
 
                     <h5>Score: </h5>
-                    <p>{results.score}</p>
+                    <p>{result.score}</p>
 
                     <h5>Time: </h5>
-                    <p>{results.time}</p>
+                    <p>{result.time}</p>
 
                     <h5>The Category you chose was: </h5>
-                    <p>{results.category}</p>
+                    <p>{result.category}</p>
 
                     <h5>The Difficulty you chose was: </h5>
-                    <p>{results.difficulty}</p>
+                    <p>{result.difficulty}</p>
                 </div>   
             </div>
 

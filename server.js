@@ -37,12 +37,12 @@ app.post('/quiz', (req, res) => {
     // })
 
     res.json({ //sending message to front-end
-        message: "User was registered"
+        message: "Message received"
     });
 });
 
 //Pull data for Profile Component
-app.get('/api/profile', (req, res) => {
+app.get('/profile', (req, res) => {
     //const userInfo = User.find(); //DB pull for user info
     //const resultsInfo = Results.find(); //DB pull for results info
 
