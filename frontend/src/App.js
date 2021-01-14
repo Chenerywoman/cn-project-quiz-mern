@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import Nav from './components/Nav';
 import Home from './components/Home';
 import Selection from './components/Selection';
 import Quiz from './components/Quiz';
@@ -20,6 +21,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Nav />
       <Switch>
         <Route exact path="/" component={Home} />
         <Route exact path="/selection" render={(props) => 
