@@ -3,6 +3,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Home from './components/Home';
 import Selection from './components/Selection';
 import Quiz from './components/Quiz';
+import Profile from './components/Profile';
 import './App.css';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
             updateDifficulty={updateDifficulty}
             {...props}/>} />
         <Route exact path="/quiz" component={Quiz} />
+        <Route exact path="/profile" component={Profile} />
       </Switch>
     </BrowserRouter>
   );

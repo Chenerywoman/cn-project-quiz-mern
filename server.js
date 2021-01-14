@@ -41,6 +41,35 @@ app.post('/quiz', (req, res) => {
     });
 });
 
+//Pull data for Profile Component
+app.get('/api/profile', (req, res) => {
+    //const userInfo = User.find(); //DB pull for user info
+    //const resultsInfo = Results.find(); //DB pull for results info
+
+    res.json({
+        users:
+            {
+                name: "Dave",
+                email: "email@domain.com"
+            },
+        results:
+            {
+                totalQuiz: 4,
+                totalScore: 32,
+                AvScore: 8,
+                fastTime: "1:22",
+                avTime: "2:17",
+                position: "1st",
+                topPosition: "1st", //needs an if but hard-coded for now
+                score: 9,
+                time: "0:58",
+                category: "General Knowledge",
+                difficulty: "Easy"
+            }
+        }
+    );
+});
+
 
 
 
