@@ -2,15 +2,103 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 // import scrambleAnswers from  '../helpers';
 
-const Quiz = () => {
+const Quiz = (props) => {
 
-     // this will be passed down from App state in future iteration
-    const [category, setCategory] = useState('');
-     // this will be passed down from App state in future iteration
-    const [level, setLevel] = useState('');
+    // console.log(props)
+  
+    const {
+        category,
+        difficulty
+    } = props
+   
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
+    const [categoryName, setCategoryName] = useState("");
     const [backendResponse, setBackendResponse] = useState("");
+
+    const getCategoryName = (catNumber) => {
+
+        let categoryName = "";
+        
+        switch (catNumber){
+          case "9": 
+           categoryName = "General Knowledge";
+            break;
+          case "10":
+            categoryName = "Books";
+            break;
+          case "11":
+            categoryName = "Film";
+            break;
+          case "12":
+            categoryName = "Music"
+            break;
+          case "13":
+            categoryName = "Musicals and Theatre";
+            break;
+          case "14":
+            categoryName = "Television";
+            break;
+          case "15":
+            categoryName = "Video Games";
+            break;
+          case "16":
+            categoryName = "Board Games";
+            break;
+          case "17":
+            categoryName = "Science and Nature";
+            break;
+          case "18":
+            categoryName = "Computers";
+            break;
+          case "19":
+            categoryName = "Mathematics";
+            break;
+          case "20":
+            categoryName = "Mythology";
+            break;
+          case "21":
+            categoryName = "Sports";
+            break;
+          case "22":
+            categoryName = "Geography"
+            break;
+          case "23":
+            categoryName = "History";
+            break;
+          case "24":
+            categoryName = "Politics";
+            break;
+          case "25":
+            categoryName = "Art";
+            break;
+          case "26":
+            categoryName = "Celebrities";
+            break;
+          case "27":
+            categoryName = "Animals";
+            break;
+          case "28":
+            categoryName = "Vehicles";
+            break;
+          case "29":
+            categoryName = "Comics";
+            break;
+          case "30":
+            categoryName = "Gadgets";
+            break;
+          case "31":
+            categoryName = "Japanese Amime and Manga"
+            break;
+          case "32":
+            categoryName = "Cartoon and Animation";
+            break;
+          default:
+            categoryName = ""
+        }
+         
+        setCategoryName(categoryName);
+    }    
 
     const scrambleAnswers = (questions) => {
 
@@ -44,14 +132,12 @@ const Quiz = () => {
     const fetchQuestions = async () => {
 
         try {
-            const response = await axios.get('https://opentdb.com/api.php?amount=10&category=10&difficulty=easy&type=multiple');
+            const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`);
 
             let questionsAndScrambledAnswers = scrambleAnswers(response.data.results);
     
             setQuestions(questionsAndScrambledAnswers);
-            setCategory(response.data.results[0].category);
-            setLevel(response.data.results[0].difficulty);
-
+            getCategoryName(category)
 
         } catch (error) {
             console.log(error)
@@ -65,19 +151,31 @@ const Quiz = () => {
         let check = event.target.value;
 
         const answersPlaceholder = [...answers]
-        answersPlaceholder.splice(questionInd, 1, correctOrIncorrect)
+        answersPlaceholder.splice(questionInd, 1, correctOrIncorrect);
 
         setAnswers(answersPlaceholder)
+
     }
 
     const formHandler = async (event) => {
 
         event.preventDefault();
     
+        console.log('in formHandler')
         console.log(answers)
 
+        const score = answers.reduce((acc, curr, ind, arr) => {
+
+            return curr ? acc + 1 : acc;
+
+        }, 0);
+
+        console.log(score)
+
         const body = {
-            answers: answers
+            score: score,
+            category: categoryName,
+            difficulty: difficulty
         }
 
         const config = {
@@ -100,8 +198,8 @@ const Quiz = () => {
     return (
       <div>
         <h1>Quiz Page</h1>
-        <h2>Category:{category} </h2>
-        <h2>Difficulty:{level}</h2>
+        <h2>Category:{categoryName} </h2>
+        <h2>Difficulty:{difficulty}</h2> 
             <form onSubmit={formHandler}>
                 {questions.map((question, questionInd) => {
                     return (

@@ -9,8 +9,8 @@ import League from './components/League';
 import './App.css';
 
 function App() {
-  const [category, setCategory] = useState();
-  const [difficulty, setDifficulty] = useState("");
+  const [category, setCategory] = useState("9");
+  const [difficulty, setDifficulty] = useState("easy");
 
   const updateCategory = (event) => {
     setCategory(event);
@@ -30,7 +30,12 @@ function App() {
             updateCategory={updateCategory} 
             updateDifficulty={updateDifficulty}
             {...props}/>} />
-        <Route exact path="/quiz" component={Quiz} />
+        <Route exact path="/quiz" render={() => 
+          <Quiz 
+            category={category}
+            difficulty={difficulty}
+            />}
+          />
         <Route exact path="/profile" component={Profile} />
         <Route exact path="/league" component={League} />
       </Switch>
