@@ -86,7 +86,7 @@ const Quiz = () => {
             }
         }
 
-        const response = await axios.post('/register', body, config);
+        const response = await axios.post('/quiz', body, config);
         console.log(response);
 
         // setBackendResponse(response.data.message)
