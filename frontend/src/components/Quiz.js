@@ -16,18 +16,12 @@ const Quiz = () => {
 
     const onRadioChange = (answerInd, questionInd, event) => {
 
-        console.log(answerInd)
-        console.log(questionInd)
-    
         let correctOrIncorrect = questions[questionInd].answers[answerInd].correct;
         let check = event.target.value;
-        console.log(correctOrIncorrect);
-        console.log(check)
 
         const answersPlaceholder = [...answers]
         answersPlaceholder.splice(questionInd, 1, correctOrIncorrect)
 
-        console.log(answersPlaceholder)
         setAnswers(answersPlaceholder)
     }
 
