@@ -4,26 +4,13 @@ import axios from 'axios';
 
 const Quiz = () => {
 
-    const [questions, setQuestions] = useState([]);
-
-    // this will be passed down from App state in future iteration
+     // this will be passed down from App state in future iteration
     const [category, setCategory] = useState('');
-
-    // this will be passed down from App state in future iteration
+     // this will be passed down from App state in future iteration
     const [level, setLevel] = useState('');
-
-    const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false])
-
-    const onRadioChange = (answerInd, questionInd, event) => {
-
-        let correctOrIncorrect = questions[questionInd].answers[answerInd].correct;
-        let check = event.target.value;
-
-        const answersPlaceholder = [...answers]
-        answersPlaceholder.splice(questionInd, 1, correctOrIncorrect)
-
-        setAnswers(answersPlaceholder)
-    }
+    const [questions, setQuestions] = useState([]);
+    const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
+    const [backendResponse, setBackendResponse] = useState("");
 
     const scrambleAnswers = (questions) => {
 
@@ -72,16 +59,50 @@ const Quiz = () => {
 
     }
 
+    const onRadioChange = (answerInd, questionInd, event) => {
+
+        let correctOrIncorrect = questions[questionInd].answers[answerInd].correct;
+        let check = event.target.value;
+
+        const answersPlaceholder = [...answers]
+        answersPlaceholder.splice(questionInd, 1, correctOrIncorrect)
+
+        setAnswers(answersPlaceholder)
+    }
+
+    const formHandler = async (event) => {
+
+        event.preventDefault();
+    
+        console.log(answers)
+
+        const body = {
+            answers: answers
+        }
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        const response = await axios.post('/register', body, config);
+        console.log(response);
+
+        // setBackendResponse(response.data.message)
+
+    }
+
     useEffect(() => fetchQuestions(), [])
 
     // console.log(questions)
-    console.log(answers)
+    // console.log(answers)
     return (
       <div>
         <h1>Quiz Page</h1>
         <h2>Category:{category} </h2>
         <h2>Difficulty:{level}</h2>
-            <form>
+            <form onSubmit={formHandler}>
                 {questions.map((question, questionInd) => {
                     return (
                             <div key={questionInd} >
