@@ -1,18 +1,16 @@
 import React from 'react';
-
+import {Link} from 'react-router-dom';
 import '../App.css';
 
 const Register = (props) => {
     const {
         updateCategory, 
         updateDifficulty,
-        redirect
     } = props;
 
     const formHandler = async (event) => {
         event.preventDefault();
         console.log("form handled");
-        redirect(); //Not working
     };
 
 
@@ -60,7 +58,7 @@ const Register = (props) => {
 
                 
 
-                <button type="submit" >Generate Quiz</button>
+                <Link to = "/quiz" ><button type="submit" >Generate Quiz</button></Link>
             </form>
         </div>
     )

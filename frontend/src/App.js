@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Home from './components/Home';
 import Selection from './components/Selection';
 import Quiz from './components/Quiz';
@@ -17,11 +17,6 @@ function App() {
     setDifficulty(event);
   };
 
-  const redirect = () => { //not working
-    console.log("redirected?");
-    return <Redirect to={"/quiz"}/>;
-  }
-
   return (
     <BrowserRouter>
       <Switch>
@@ -30,7 +25,6 @@ function App() {
           <Selection 
             updateCategory={updateCategory} 
             updateDifficulty={updateDifficulty}
-            redirect={redirect} 
             {...props}/>} />
         <Route exact path="/quiz" component={Quiz} />
       </Switch>
