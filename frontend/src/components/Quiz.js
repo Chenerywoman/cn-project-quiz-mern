@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const Quiz = () => {
 
-    const [questions, setQuestions] = useState([])
+    const [questions, setQuestions] = useState([]);
 
     // this will be passed down from App state in future iteration
     const [category, setCategory] = useState('')
@@ -14,7 +14,7 @@ const Quiz = () => {
 
     const scrambleAnswers = (questions) => {
 
-        const questionandAnswers = questions.reduce((acc, curr) => {
+        const questionandAnswers = questions.reduce((acc, curr, ind) => {
     
             let answers = [{answer: curr.correct_answer, correct: true}, {answer: curr.incorrect_answers[0], correct:false}, {answer: curr.incorrect_answers[1], correct:false}, {answer: curr.incorrect_answers[2], correct:false}];
             let mixedAnswers = [];
@@ -32,7 +32,7 @@ const Quiz = () => {
     
             }
     
-            acc.push({question: curr.question, answers: mixedAnswers});
+            acc.push({number: `Question${ind}`, question: curr.question, answers: mixedAnswers});
            return acc;
     
         }, [])
@@ -72,11 +72,11 @@ const Quiz = () => {
                     return (
                             <div key={ind} >
                                 <p> {question.question} </p>
-                                {question.answers.map((answer, ind) => {
+                                {question.answers.map((answer, ind, arr) => {
                                     return(
                                         <div key={ind}>
-                                            <label htmlFor={ind}>{answer.answer}</label>
-                                            <input type="radio" name={ind} value={answer.correct} />
+                                            <label htmlFor={question.number}>{answer.answer}</label>
+                                            <input type="radio" name={question.number} value={answer.correct} />
                                         </div>
                                     )
                                 })}
