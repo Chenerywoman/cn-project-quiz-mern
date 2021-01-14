@@ -4,19 +4,19 @@ import axios from 'axios';
 
 const Quiz = () => {
 
+     // this will be passed down from App state in future iteration
+    const [category, setCategory] = useState('');
+     // this will be passed down from App state in future iteration
+    const [level, setLevel] = useState('');
     const [questions, setQuestions] = useState([]);
-
-    // this will be passed down from App state in future iteration
-    const [category, setCategory] = useState('')
-
-    // this will be passed down from App state in future iteration
-    const [level, setLevel] = useState('')
+    const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
+    const [backendResponse, setBackendResponse] = useState("");
 
     const scrambleAnswers = (questions) => {
 
         const questionandAnswers = questions.reduce((acc, curr, ind) => {
     
-            let answers = [{answer: curr.correct_answer, correct: true}, {answer: curr.incorrect_answers[0], correct:false}, {answer: curr.incorrect_answers[1], correct:false}, {answer: curr.incorrect_answers[2], correct:false}];
+            let answers = [{answer: curr.correct_answer, correct: true, selected: false}, {answer: curr.incorrect_answers[0], correct:false, selected: false}, {answer: curr.incorrect_answers[1], correct:false, selected: false}, {answer: curr.incorrect_answers[2], correct:false, selected: false}];
             let mixedAnswers = [];
             
             let num = 4;
@@ -36,8 +36,8 @@ const Quiz = () => {
            return acc;
     
         }, [])
-    
         return questionandAnswers;
+        
     
     };
 
@@ -59,24 +59,59 @@ const Quiz = () => {
 
     }
 
+    const onRadioChange = (answerInd, questionInd, event) => {
+
+        let correctOrIncorrect = questions[questionInd].answers[answerInd].correct;
+        let check = event.target.value;
+
+        const answersPlaceholder = [...answers]
+        answersPlaceholder.splice(questionInd, 1, correctOrIncorrect)
+
+        setAnswers(answersPlaceholder)
+    }
+
+    const formHandler = async (event) => {
+
+        event.preventDefault();
+    
+        console.log(answers)
+
+        const body = {
+            answers: answers
+        }
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        const response = await axios.post('/quiz', body, config);
+        console.log(response);
+
+        // setBackendResponse(response.data.message)
+
+    }
+
     useEffect(() => fetchQuestions(), [])
 
-
+    // console.log(questions)
+    // console.log(answers)
     return (
       <div>
         <h1>Quiz Page</h1>
         <h2>Category:{category} </h2>
         <h2>Difficulty:{level}</h2>
-            <form>
-                {questions.map((question, ind) => {
+            <form onSubmit={formHandler}>
+                {questions.map((question, questionInd) => {
                     return (
-                            <div key={ind} >
+                            <div key={questionInd} >
                                 <p> {question.question} </p>
-                                {question.answers.map((answer, ind, arr) => {
+                                {question.answers.map((answer, answerInd, arr) => {
                                     return(
-                                        <div key={ind}>
+                                        <div key={answerInd}>
                                             <label htmlFor={question.number}>{answer.answer}</label>
-                                            <input type="radio" name={question.number} value={answer.correct} />
+                                            <input type="radio" name={question.number} value={answer.correct} onChange={(event) => onRadioChange(answerInd, questionInd, event)}/>
                                         </div>
                                     )
                                 })}
