@@ -5,6 +5,7 @@ import Home from './components/Home';
 import Selection from './components/Selection';
 import Quiz from './components/Quiz';
 import Profile from './components/Profile';
+import League from './components/League';
 import './App.css';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             {...props}/>} />
         <Route exact path="/quiz" component={Quiz} />
         <Route exact path="/profile" component={Profile} />
+        <Route exact path="/league" component={League} />
       </Switch>
     </BrowserRouter>
   );
