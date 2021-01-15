@@ -70,7 +70,26 @@ app.get('/profile', (req, res) => {
     );
 });
 
+//Pull data for League Component
+app.get('/league', (req, res) => {
+    //const userInfo = User.find(); //DB pull for user info
+    //const resultsInfo = Results.find(); //DB pull for results info
 
+    res.json({
+        users:
+            {
+                name: "Dave",
+            },
+        results:
+            {
+                score: 9,
+                time: "0:58",
+                category: "General Knowledge",
+                difficulty: "Easy"
+            }
+        }
+    );
+});
 
 
 //error handling
