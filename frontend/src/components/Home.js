@@ -1,9 +1,11 @@
-import React from 'react'
+import React from 'react';
+import {Link} from 'react-router-dom';
 
 const Home = () => {
     return (
         <div>
-            hello
+            <h1>The Quiz of Awesomeness</h1>
+            <Link to="/register" ><button>Register</button></Link>
         </div>
     )
 }
