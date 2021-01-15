@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-// import scrambleAnswers from  '../helpers';
+import {Link} from 'react-router-dom';
 
 const Quiz = (props) => {
   
@@ -263,7 +263,7 @@ const Quiz = (props) => {
                         )
                     })
                 }
-                <input type="submit" value="Submit" />
+                <Link to = "/profile" ><input type="submit" value="Submit" /></Link>
             </form>            
         </div>
     )
