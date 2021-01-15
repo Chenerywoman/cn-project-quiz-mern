@@ -20,6 +20,7 @@ function App() {
   };
 
   const updateSessionToken = async (token) => {
+    console.log('in update session token')
     const updatedSessionTokenResponse = await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${token}`);
     setSessionToken(updatedSessionTokenResponse.data.token)
   }

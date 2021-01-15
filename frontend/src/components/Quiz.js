@@ -102,11 +102,21 @@ const Quiz = (props) => {
         setCategoryName(categoryName);
     }    
 
+    const decodeText = (encodedText) => {
+
+          let text = document.createElement('textarea');
+          text.innerHTML = encodedText;
+          let decodedText = text.value;
+
+          return decodedText;
+
+      };
+
     const scrambleAnswers = (questions) => {
 
-        const questionandAnswers = questions.reduce((acc, curr, ind) => {
+        const questionsandAnswers = questions.reduce((acc, curr, ind) => {
     
-            let answers = [{answer: curr.correct_answer, correct: true, selected: false}, {answer: curr.incorrect_answers[0], correct:false, selected: false}, {answer: curr.incorrect_answers[1], correct:false, selected: false}, {answer: curr.incorrect_answers[2], correct:false, selected: false}];
+            let answers = [{answer: decodeText(curr.correct_answer), correct: true, selected: false}, {answer: decodeText(curr.incorrect_answers[0]), correct:false, selected: false}, {answer: decodeText(curr.incorrect_answers[1]), correct:false, selected: false}, {answer: decodeText(curr.incorrect_answers[2]), correct:false, selected: false}];
             let mixedAnswers = [];
             
             let num = 4;
@@ -122,11 +132,12 @@ const Quiz = (props) => {
     
             }
     
-            acc.push({number: `Question${ind}`, question: curr.question, answers: mixedAnswers});
+            acc.push({number: `Question${ind}`, question: decodeText(curr.question), answers: mixedAnswers});
            return acc;
     
         }, [])
-        return questionandAnswers;
+
+        return questionsandAnswers;
         
     
     };
@@ -138,35 +149,49 @@ const Quiz = (props) => {
       try {
 
         if (sessionToken) {
-              
-              console.log(sessionToken)
 
-              const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+            console.log(sessionToken)
+
+            const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+            console.log(response)
+
+            // const response = await axios.get(`https://opentdb.com/api.php?amount=Ten&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+
+            if (response.data && response.data.response_code === 1) {
+
+                console.log("in response code 1 if ");
+                console.log(response)
+
+            } else if (response.data && response.data.response_code === 2) {
+
+              console.log("in response code 2 else if");
               console.log(response)
 
-              if (response.data.response_code == 4) {
+            } else if (response.data && response.data.response_code === 3) {
 
-                  updateSessionToken(sessionToken)
-              }
+                console.log("in response code 3 else if ");
+                getSessionToken();
 
-              let questionsAndScrambledAnswers = scrambleAnswers(response.data.results);
-    
-              setQuestions(questionsAndScrambledAnswers);
+            } else if (response.data && response.data.response_code === 4) {
 
-            } else {
-              console.log("in session token else")
-              getSessionToken()
-
-              // const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
-              // let questionsAndScrambledAnswers = scrambleAnswers(response.data.results);
-    
-              // setQuestions(questionsAndScrambledAnswers);
+                console.log("in response code 4 else if ");
+                updateSessionToken(sessionToken)
 
             }
-            
-        } catch (error) {
-            console.log(error)
+
+            let questionsAndScrambledAnswers = scrambleAnswers(response.data.results);
+
+            setQuestions(questionsAndScrambledAnswers);
+
+        } else {
+          console.log("in session token else");
+          getSessionToken();
+
         }
+
+      } catch (error) {
+        console.log(error)
+      }
 
     }
 
