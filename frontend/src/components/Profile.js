@@ -13,11 +13,9 @@ const Profile = () => {
     const fetchData = async () => {
         const response = await axios.get('/profile');
         setUser(response.data.users);
-        console.log(response.data.users);
         setResult(response.data.results);
-        console.log(response.data.results);
 
-    }
+    };
 
 
     return (
