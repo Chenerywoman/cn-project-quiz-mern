@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import axios from 'axios';
 import Nav from './components/Nav';
 import Home from './components/Home';
 import Selection from './components/Selection';
@@ -11,6 +12,17 @@ import './App.css';
 function App() {
   const [category, setCategory] = useState("9");
   const [difficulty, setDifficulty] = useState("easy");
+  const [sessionToken, setSessionToken] = useState("");
+
+  const getSessionToken = async () => {   
+    const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
+    setSessionToken(sessionTokenResponse.data.token);
+  };
+
+  const updateSessionToken = async (token) => {
+    const updatedSessionTokenResponse = await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${token}`);
+    setSessionToken(updatedSessionTokenResponse.data.token)
+  }
 
   const updateCategory = (event) => {
     setCategory(event);
@@ -20,6 +32,7 @@ function App() {
     setDifficulty(event);
   };
 
+  console.log(sessionToken)
   return (
     <BrowserRouter>
       <Nav />
@@ -34,6 +47,9 @@ function App() {
           <Quiz 
             category={category}
             difficulty={difficulty}
+            sessionToken={sessionToken}
+            getSessionToken={getSessionToken}
+            updateSessionToken={updateSessionToken}
             />}
           />
         <Route exact path="/profile" component={Profile} />

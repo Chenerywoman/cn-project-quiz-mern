@@ -3,18 +3,20 @@ import axios from 'axios';
 // import scrambleAnswers from  '../helpers';
 
 const Quiz = (props) => {
-
-    // console.log(props)
   
     const {
         category,
-        difficulty
+        difficulty,
+        sessionToken,
+        getSessionToken, 
+        updateSessionToken
     } = props
    
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
     const [categoryName, setCategoryName] = useState("");
-    const [backendResponse, setBackendResponse] = useState("");
+    // const [backendResponse, setBackendResponse] = useState("");
+    
 
     const getCategoryName = (catNumber) => {
 
@@ -130,15 +132,38 @@ const Quiz = (props) => {
     };
 
     const fetchQuestions = async () => {
+      console.log('in fetch questions')
+      getCategoryName(category)
 
-        try {
-            const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`);
+      try {
 
-            let questionsAndScrambledAnswers = scrambleAnswers(response.data.results);
+        if (sessionToken) {
+              
+              console.log(sessionToken)
+
+              const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+              console.log(response)
+
+              if (response.data.response_code == 4) {
+
+                  updateSessionToken(sessionToken)
+              }
+
+              let questionsAndScrambledAnswers = scrambleAnswers(response.data.results);
     
-            setQuestions(questionsAndScrambledAnswers);
-            getCategoryName(category)
+              setQuestions(questionsAndScrambledAnswers);
 
+            } else {
+              console.log("in session token else")
+              getSessionToken()
+
+              // const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+              // let questionsAndScrambledAnswers = scrambleAnswers(response.data.results);
+    
+              // setQuestions(questionsAndScrambledAnswers);
+
+            }
+            
         } catch (error) {
             console.log(error)
         }
@@ -148,7 +173,7 @@ const Quiz = (props) => {
     const onRadioChange = (answerInd, questionInd, event) => {
 
         let correctOrIncorrect = questions[questionInd].answers[answerInd].correct;
-        let check = event.target.value;
+        // let check = event.target.value;
 
         const answersPlaceholder = [...answers]
         answersPlaceholder.splice(questionInd, 1, correctOrIncorrect);
@@ -160,9 +185,6 @@ const Quiz = (props) => {
     const formHandler = async (event) => {
 
         event.preventDefault();
-    
-        console.log('in formHandler')
-        console.log(answers)
 
         const score = answers.reduce((acc, curr, ind, arr) => {
 
@@ -191,10 +213,9 @@ const Quiz = (props) => {
 
     }
 
-    useEffect(() => fetchQuestions(), [])
+    useEffect(() => fetchQuestions(), [sessionToken])
 
-    // console.log(questions)
-    // console.log(answers)
+    console.log(sessionToken)
     return (
       <div>
         <h1>Quiz Page</h1>
