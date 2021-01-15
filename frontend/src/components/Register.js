@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 
 const Register = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [confPassword, setConfPassword] = useState("");
-    // const [backendResponse, setBackendResponse] = useState("");
+    const [conf, setConf] = useState("");
+    const [backendResponse, setBackendResponse] = useState("");
 
     const formHandler = async (event) => {
         event.preventDefault();
@@ -18,21 +18,22 @@ const Register = () => {
         const body = {
             userName: name,
             userEmail: email,
-            userPassword: password
+            userPassword: password,
+            confPassword: conf
         };
 
         console.log(body);
 
-        // const config = {
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //         }
-        // };
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+                }
+        };
 
-        // const response = await axios.post('/register', body, config);
+        const response = await axios.post('/register', body, config);
 
-        // setBackendResponse(response.data.message);
-        // console.log(response);
+        setBackendResponse(response.data.message);
+        console.log(response);
     };
 
     return (
@@ -50,7 +51,7 @@ const Register = () => {
                 <input type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
 
                 <label>Confirm Password: </label>
-                <input type="password" name="confPassword" onChange={(e) => setConfPassword(e.target.value)} /><br />
+                <input type="password" name="confPassword" onChange={(e) => setConf(e.target.value)} /><br />
 
                 <button type="submit" >Register</button>
             </form>
