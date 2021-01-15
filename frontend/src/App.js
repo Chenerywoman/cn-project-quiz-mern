@@ -3,6 +3,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import axios from 'axios';
 import Nav from './components/Nav';
 import Home from './components/Home';
+import Register from './components/Register';
 import Selection from './components/Selection';
 import Quiz from './components/Quiz';
 import Profile from './components/Profile';
@@ -38,6 +39,7 @@ function App() {
       <Nav />
       <Switch>
         <Route exact path="/" component={Home} />
+        <Route exact path="/register" component={Register} />
         <Route exact path="/selection" render={(props) => 
           <Selection 
             updateCategory={updateCategory} 

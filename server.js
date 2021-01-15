@@ -2,6 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const User = require('./models/userModel'); //when importing a model, use a capital letter, use this to accessdb
+const Result = require('./models/resultModel');
+// const bcrypt = require('bcryptjs');
+// const jwt = require('jsonwebtoken');
+// const cookieParser = require('cookie-parser'); //needs to be initialised
+// const auth = require('./middleware/auth');
 
 dotenv.config( { path: './.env' } );
 
@@ -11,12 +17,12 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json({extended: false}));
 app.use(cors());
 
-// mongoose.connect( process.env.DB_URL, { 
-//     useNewUrlParser: true,
-//     useCreateIndex: true,
-//     useFindAndModify: false,
-//     useUnifiedTopology: true
-// }).then( () => console.log('MongoDB is Connected')); 
+mongoose.connect( process.env.DB_URL, { 
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true
+}).then( () => console.log('MongoDB is Connected')); 
 
 //home page
 app.get('/', (req, res) => {
