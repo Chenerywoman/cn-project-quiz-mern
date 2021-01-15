@@ -144,7 +144,7 @@ const Quiz = (props) => {
               const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
               console.log(response)
 
-              if (response.data.response_code == 4) {
+              if (response.data && (response.data.response_code === 3 || response.data.response_code === 4)){
 
                   updateSessionToken(sessionToken)
               }
@@ -154,13 +154,8 @@ const Quiz = (props) => {
               setQuestions(questionsAndScrambledAnswers);
 
             } else {
-              console.log("in session token else")
-              getSessionToken()
-
-              // const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
-              // let questionsAndScrambledAnswers = scrambleAnswers(response.data.results);
-    
-              // setQuestions(questionsAndScrambledAnswers);
+              console.log("in session token else");
+              getSessionToken();
 
             }
             
