@@ -4,8 +4,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const User = require('./models/userModel'); //when importing a model, use a capital letter, use this to accessdb
 const Result = require('./models/resultModel');
-// const bcrypt = require('bcryptjs');
-// const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 // const cookieParser = require('cookie-parser'); //needs to be initialised
 // const auth = require('./middleware/auth');
 
@@ -50,11 +50,11 @@ app.post('/register', async (req, res) => {
                 message: "That email already exists"
             });
         } else {
-            // const hashedPassword = await bcrypt.hash(req.body.userPassword, 13);
+            const hashedPassword = await bcrypt.hash(req.body.userPassword, 13);
             await User.create({
                 name: req.body.userName,
                 email: req.body.userEmail,
-                password: req.body.userPassword /*hashedPassword*/
+                password: hashedPassword
             });
             res.json({ //sending message to front-end
                 message: "User registered"
