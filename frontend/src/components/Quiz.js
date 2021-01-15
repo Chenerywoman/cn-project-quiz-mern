@@ -16,6 +16,7 @@ const Quiz = (props) => {
     const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
     const [categoryName, setCategoryName] = useState("");
     const [noResults, setNoResults] = useState(false);
+   
     // const [backendResponse, setBackendResponse] = useState("");
     
     const getCategoryName = (catNumber) => {
