@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import {Link} from 'react-router-dom';
+import {Link, Redirect} from 'react-router-dom';
 
 const Quiz = (props) => {
   
@@ -15,30 +15,16 @@ const Quiz = (props) => {
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
     const [categoryName, setCategoryName] = useState("");
+    const [noResults, setNoResults] = useState(false);
     // const [backendResponse, setBackendResponse] = useState("");
     
-
     const getCategoryName = (catNumber) => {
 
         let categoryName = "";
         
         switch (catNumber){
           case "9": 
-           categoryName = "General Knowledge";
-            break;
-          case "10":
-            categoryName = "Books";
-            break;
-          case "11":
-            categoryName = "Film";
-            break;
-          case "12":
-            categoryName = "Music"
-            break;
-          case "13":
-            categoryName = "Musicals and Theatre";
-            break;
-          case "14":
+           categoryName = "General Knowledge"; 
             categoryName = "Television";
             break;
           case "15":
@@ -138,7 +124,6 @@ const Quiz = (props) => {
         }, [])
 
         return questionsandAnswers;
-        
     
     };
 
@@ -152,20 +137,23 @@ const Quiz = (props) => {
 
             console.log(sessionToken)
 
-            const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
-            console.log(response)
+            // const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+            // console.log(response)
 
-            // const response = await axios.get(`https://opentdb.com/api.php?amount=Ten&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+            const response = await axios.get(`https://opentdb.com/api.php?amount=Ten&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+            console.log(response)
 
             if (response.data && response.data.response_code === 1) {
 
                 console.log("in response code 1 if ");
-                console.log(response)
+                console.log(response);
+                setNoResults(true);
 
             } else if (response.data && response.data.response_code === 2) {
 
               console.log("in response code 2 else if");
               console.log(response)
+              setNoResults(true);
 
             } else if (response.data && response.data.response_code === 3) {
 
@@ -238,35 +226,44 @@ const Quiz = (props) => {
 
     }
 
-    useEffect(() => fetchQuestions(), [sessionToken])
+    useEffect(() => fetchQuestions(), [sessionToken, noResults])
 
     console.log(sessionToken)
-    return (
-      <div>
-        <h1>Quiz Page</h1>
-        <h2>Category:{categoryName} </h2>
-        <h2>Difficulty:{difficulty}</h2> 
-            <form onSubmit={formHandler}>
-                {questions.map((question, questionInd) => {
-                    return (
-                            <div key={questionInd} >
-                                <p> {question.question} </p>
-                                {question.answers.map((answer, answerInd, arr) => {
-                                    return(
-                                        <div key={answerInd}>
-                                            <label htmlFor={question.number}>{answer.answer}</label>
-                                            <input type="radio" name={question.number} value={answer.correct} onChange={(event) => onRadioChange(answerInd, questionInd, event)}/>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        )
-                    })
-                }
-                <Link to = "/profile" ><input type="submit" value="Submit" /></Link>
-            </form>            
-        </div>
-    )
+
+    {
+      if (noResults) {
+        return <Redirect to = "/error" / >
+      } else {
+        
+        return (
+          <div>
+            <h1>Quiz Page</h1>
+            <h2>Category:{categoryName} </h2>
+            <h2>Difficulty:{difficulty}</h2> 
+                <form onSubmit={formHandler}>
+                    {questions.map((question, questionInd) => {
+                        return (
+                                <div key={questionInd} >
+                                    <p> {question.question} </p>
+                                    {question.answers.map((answer, answerInd, arr) => {
+                                        return(
+                                            <div key={answerInd}>
+                                                <label htmlFor={question.number}>{answer.answer}</label>
+                                                <input type="radio" name={question.number} value={answer.correct} onChange={(event) => onRadioChange(answerInd, questionInd, event)}/>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            )
+                        })
+                    }
+                    <Link to = "/profile" ><input type="submit" value="Submit" /></Link>
+                </form>            
+            </div>
+        )
+
+      }
+    }
 }
 
 export default Quiz
