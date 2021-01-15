@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
 const Register = () => {
@@ -7,6 +8,8 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [conf, setConf] = useState("");
     const [backendResponse, setBackendResponse] = useState("");
+
+    const history = useHistory();
 
     const formHandler = async (event) => {
         event.preventDefault();
@@ -33,7 +36,12 @@ const Register = () => {
         const response = await axios.post('/register', body, config);
 
         setBackendResponse(response.data.message);
-        console.log(response);
+        console.log(response.data.message);
+
+        if(response.data.message === "User registered") {
+            history.push('/profile'); //change to login
+        };
+
     };
 
     return (
@@ -42,20 +50,20 @@ const Register = () => {
 
             <form onSubmit={formHandler} >
                 <label>User Name: </label>
-                <input type="text" name="userName" onChange={(e) => setName(e.target.value)} /><br />
+                <input required type="text" name="userName" onChange={(e) => setName(e.target.value)} /><br />
 
                 <label>User Email: </label>
-                <input type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
+                <input required type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
 
                 <label>User Password: </label>
-                <input type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
+                <input required type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
 
                 <label>Confirm Password: </label>
-                <input type="password" name="confPassword" onChange={(e) => setConf(e.target.value)} /><br />
+                <input required type="password" name="confPassword" onChange={(e) => setConf(e.target.value)} /><br />
 
                 <button type="submit" >Register</button>
             </form>
-            {/* { backendResponse } */}
+            { backendResponse }
         </div>
     )
 }
