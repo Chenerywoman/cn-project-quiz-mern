@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import axios from 'axios';
 import {Link, Redirect} from 'react-router-dom';
 
@@ -26,6 +26,20 @@ const Quiz = (props) => {
         switch (catNumber){
           case "9": 
            categoryName = "General Knowledge"; 
+            break;
+          case "10": 
+            categoryName = "Books"; 
+            break;
+          case "11": 
+            categoryName = "Film"; 
+            break;
+          case "12": 
+            categoryName = "Music"; 
+            break;
+          case "13": 
+            categoryName = "Musicals and Theatres"; 
+            break;
+          case "14":
             categoryName = "Television";
             break;
           case "15":
@@ -83,6 +97,7 @@ const Quiz = (props) => {
             categoryName = "Cartoon and Animation";
             break;
           default:
+            // test category working
             categoryName = ""
         }
          
@@ -99,8 +114,9 @@ const Quiz = (props) => {
 
       };
 
-    const scrambleAnswers = (questions) => {
-
+      const scrambledAnswersCallBack = useCallback(
+        (questions) => {
+        
         const questionsandAnswers = questions.reduce((acc, curr, ind) => {
     
             let answers = [{answer: decodeText(curr.correct_answer), correct: true, selected: false}, {answer: decodeText(curr.incorrect_answers[0]), correct:false, selected: false}, {answer: decodeText(curr.incorrect_answers[1]), correct:false, selected: false}, {answer: decodeText(curr.incorrect_answers[2]), correct:false, selected: false}];
@@ -126,68 +142,15 @@ const Quiz = (props) => {
 
         return questionsandAnswers;
     
-    };
+    },
+    []
+  )
 
-    const fetchQuestions = async () => {
-      console.log('in fetch questions')
-      getCategoryName(category)
-
-      try {
-
-        if (sessionToken) {
-
-            console.log(sessionToken)
-
-            // const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
-            // console.log(response)
-
-            const response = await axios.get(`https://opentdb.com/api.php?amount=Ten&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
-            console.log(response)
-
-            if (response.data && response.data.response_code === 1) {
-
-                console.log("in response code 1 if ");
-                console.log(response);
-                setNoResults(true);
-
-            } else if (response.data && response.data.response_code === 2) {
-
-              console.log("in response code 2 else if");
-              console.log(response)
-              setNoResults(true);
-
-            } else if (response.data && response.data.response_code === 3) {
-
-                console.log("in response code 3 else if ");
-                getSessionToken();
-
-            } else if (response.data && response.data.response_code === 4) {
-
-                console.log("in response code 4 else if ");
-                updateSessionToken(sessionToken)
-
-            }
-
-            let questionsAndScrambledAnswers = scrambleAnswers(response.data.results);
-
-            setQuestions(questionsAndScrambledAnswers);
-
-        } else {
-          console.log("in session token else");
-          getSessionToken();
-
-        }
-
-      } catch (error) {
-        console.log(error)
-      }
-
-    }
+    
 
     const onRadioChange = (answerInd, questionInd, event) => {
 
         let correctOrIncorrect = questions[questionInd].answers[answerInd].correct;
-        // let check = event.target.value;
 
         const answersPlaceholder = [...answers]
         answersPlaceholder.splice(questionInd, 1, correctOrIncorrect);
@@ -205,8 +168,6 @@ const Quiz = (props) => {
             return curr ? acc + 1 : acc;
 
         }, 0);
-
-        console.log(score)
 
         const body = {
             score: score,
@@ -227,15 +188,81 @@ const Quiz = (props) => {
 
     }
 
-    useEffect(() => fetchQuestions(), [sessionToken, noResults])
+    useEffect(() => {
+      
+      const fetchQuestions = async () => {
+        console.log('in fetch questions')
+        getCategoryName(category)
+  
+        try {
+  
+          if (sessionToken) {
+  
+              const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+              console.log(response)
+  
+              // forcing a none 0 response code
+              // const response = await axios.get(`https://opentdb.com/api.php?amount=Ten&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+              // console.log(response)
+  
+              if (response.data && response.data.response_code === 1) {
+  
+                  console.log("in response code 1 if ");
+                  console.log(response);
+                  setNoResults(true);
+  
+              } else if (response.data && response.data.response_code === 2) {
+  
+                console.log("in response code 2 else if");
+                console.log(response)
+                setNoResults(true);
+  
+              } else if (response.data && response.data.response_code === 3) {
+  
+                  console.log("in response code 3 else if ");
+                  getSessionToken();
+  
+              } else if (response.data && response.data.response_code === 4) {
+  
+                  console.log("in response code 4 else if ");
+                  updateSessionToken(sessionToken)
+  
+              }
+  
+              let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
+  
+              setQuestions(questionsAndScrambledAnswers);
+  
+          } else {
+            console.log("in session token else");
+            getSessionToken();
+  
+          }
+  
+        } catch (error) {
+          console.log("in error block")
+          console.log(error)
+          setNoResults(true);
+        }
+  
+      };
+      
+      fetchQuestions()
+      
+      
+    }, [sessionToken, getSessionToken, updateSessionToken, category, difficulty, scrambledAnswersCallBack, noResults])
 
-    console.log(sessionToken)
+  
+    // console.log(sessionToken)
+    console.log('answers')
+    console.log(answers)
+    console.log("category, difficulty")
+    console.log(category)
+    console.log(difficulty)
 
-    {
       if (noResults) {
         return <Redirect to = "/error" / >
-      } else {
-        
+      } 
         return (
           <div>
             <h1>Quiz Page</h1>
@@ -246,11 +273,11 @@ const Quiz = (props) => {
                         return (
                                 <div key={questionInd} >
                                     <p> {question.question} </p>
-                                    {question.answers.map((answer, answerInd, arr) => {
+                                    {question.answers.map((answer, answerInd) => {
                                         return(
                                             <div key={answerInd}>
                                                 <label htmlFor={question.number}>{answer.answer}</label>
-                                                <input type="radio" name={question.number} value={answer.correct} onChange={(event) => onRadioChange(answerInd, questionInd, event)}/>
+                                                <input type="radio" name={question.number} value={answer.correct} onChange={(event) => onRadioChange(answerInd, questionInd, event)} required/>
                                             </div>
                                         )
                                     })}
@@ -262,9 +289,6 @@ const Quiz = (props) => {
                 </form>            
             </div>
         )
-
-      }
-    }
 }
 
 export default Quiz
