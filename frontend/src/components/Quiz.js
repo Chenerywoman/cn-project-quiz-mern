@@ -197,7 +197,7 @@ const Quiz = (props) => {
         try {
   
           if (sessionToken) {
-  
+              console.log('in sessionToken if')
               const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
               console.log(response)
   
@@ -253,9 +253,9 @@ const Quiz = (props) => {
     }, [sessionToken, getSessionToken, updateSessionToken, category, difficulty, scrambledAnswersCallBack, noResults])
 
   
-    // console.log(sessionToken)
-    console.log('answers')
-    console.log(answers)
+    console.log(sessionToken)
+    // console.log('answers')
+    // console.log(answers)
     console.log("category, difficulty")
     console.log(category)
     console.log(difficulty)

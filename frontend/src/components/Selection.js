@@ -11,9 +11,22 @@ const Selection = (props) => {
         event.preventDefault();
         console.log("form handled");
     };
+    
 
-    useEffect(() => updateCategory("9"), [])
-    useEffect(() => updateDifficulty("easy"),[])
+    useEffect(() => {
+
+        const setCategoryToGeneraKnowledge = () => updateCategory("9");
+        setCategoryToGeneraKnowledge();
+
+    },[]);
+
+
+    useEffect(() => {
+
+        const setLevelToEasy = () => updateDifficulty("easy");
+        setLevelToEasy();
+        
+    },[]);
 
     return (
         <div>
