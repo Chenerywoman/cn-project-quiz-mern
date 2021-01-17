@@ -37,9 +37,6 @@ function App() {
     setDifficulty(event);
   };
 
-
-
-  console.log(sessionToken)
   return (
     <BrowserRouter>
       <Nav />
