@@ -30,7 +30,7 @@ const Timer = ({getTimeTaken}) => {
     
     }
   
-  }, [counter, getTimeTaken])
+  }, [counter, getTimeTaken, minutes, seconds])
 
   return (
     <>
