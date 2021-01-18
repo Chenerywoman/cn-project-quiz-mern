@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import {Link} from 'react-router-dom';
 
 const Selection = (props) => {
+    
     const {
         updateCategory, 
         updateDifficulty,
@@ -15,18 +16,16 @@ const Selection = (props) => {
 
     useEffect(() => {
 
-        const setCategoryToGeneraKnowledge = () => updateCategory("9");
-        setCategoryToGeneraKnowledge();
+      updateCategory("9");
 
-    },[]);
+    },[updateCategory]);
 
 
     useEffect(() => {
 
-        const setLevelToEasy = () => updateDifficulty("easy");
-        setLevelToEasy();
+        updateDifficulty("easy");
         
-    },[]);
+    },[updateDifficulty]);
 
     return (
         <div>
@@ -68,8 +67,6 @@ const Selection = (props) => {
                     <option value="medium">Medium</option>
                     <option value="hard">Hard</option>
                 </select> <br />
-
-                
 
                 <Link to = "/quiz" ><button type="submit" >Generate Quiz</button></Link>
             </form>
