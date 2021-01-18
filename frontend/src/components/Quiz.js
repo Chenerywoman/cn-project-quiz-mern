@@ -1,8 +1,10 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import axios from 'axios';
-import {Link, Redirect} from 'react-router-dom';
+import {useHistory, Redirect} from 'react-router-dom';
 
 const Quiz = (props) => {
+
+  const history = useHistory();
   
     const {
         category,
@@ -10,7 +12,7 @@ const Quiz = (props) => {
         sessionToken,
         getSessionToken, 
         updateSessionToken
-    } = props
+    } = props;
    
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
@@ -160,7 +162,7 @@ const Quiz = (props) => {
     }
 
     const formHandler = async (event) => {
-
+        console.log("in form handler")
         event.preventDefault();
 
         const score = answers.reduce((acc, curr, ind, arr) => {
@@ -185,7 +187,9 @@ const Quiz = (props) => {
         const response = await axios.post('/quiz', body, config);
         console.log(response);
 
-        // setBackendResponse(response.data.message)
+        if(response.data.message === "Results logged") {
+          history.push('/profile'); 
+      };
 
     }
 
@@ -291,7 +295,7 @@ const Quiz = (props) => {
                             )
                         })
                     }
-                    <Link to = "/profile" ><input type="submit" value="Submit" /></Link>
+                    <input type="submit" value="Submit" />
                 </form>            
             </div>
         )
