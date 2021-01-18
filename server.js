@@ -112,19 +112,19 @@ app.post('/login', async (req, res) => {
 //quiz scores
 app.post('/quiz', auth.isLoggedIn, async (req, res) => {
     console.log("reaching backend"); //checking data is received on backend
-    // console.log(req.body.score);
-    // console.log(req.body.time);
-    // console.log(req.body.category);
-    // console.log(req.body.difficulty);
-    // console.log(req.userFound._id);
+    console.log(req.body.score);
+    console.log(req.body.time);
+    console.log(req.body.category);
+    console.log(req.body.difficulty);
+    console.log(req.userFound._id);
 
-    // await Result.create({
-    //     score: req.body.score,
-    //     time: req.body.time,
-    //     category: req.body.category,
-    //     difficulty: req.body.difficulty,
-    //     user: req.userFound._id, //add later after User db created
-    // })
+    await Result.create({
+        score: req.body.score,
+        time: req.body.time,
+        category: req.body.category,
+        difficulty: req.body.difficulty,
+        user: req.userFound._id, //add later after User db created
+    })
 
     res.json({ //sending message to front-end
         message: "Results logged"
@@ -132,9 +132,47 @@ app.post('/quiz', auth.isLoggedIn, async (req, res) => {
 });
 
 //Pull data for Profile Component
-app.get('/profile', auth.isLoggedIn, (req, res) => {
-    const userInfo = User.find(); //DB pull for user info
-    //const resultsInfo = Results.find(); //DB pull for results info
+app.get('/profile', auth.isLoggedIn, async (req, res) => {
+    // const userInfo = User.find(); //DB pull for user info
+    const resultInfo = await Result.find({ user: req.userFound._id }); //DB pull for results info
+    console.log(resultInfo);
+
+    //stat calculation
+    const quizzes = resultInfo.length;
+    let totScores = 0;
+    let times = [];
+    for(let i = 0; i < resultInfo.length; i++) {
+        totScores += resultInfo[i].score; 
+        times.push(resultInfo[i].time); //need to convert from str
+    };
+    const aveScore =  totScores/quizzes;
+
+    //convert times from string
+    let newArr = [];
+    let fastest = [];
+    let fastestPos = 0;
+    let totTime = 0;
+    for(let i = 0; i < times.length; i++) {
+        let hms = "01:0" + times[i]; //gives hours:minutes:seconds +1hour otherwise it won't work
+        let fullTime = new Date("1970-01-01T" + hms); //gives full date and time including date of 1/1/70 to allow you to extract time as milliseconds
+
+        timeMS = fullTime.getTime(); //extracts time in milliseconds
+        newArr.push(timeMS); //pushes ms to an array
+        totTime += timeMS;
+
+        if (fastest.length === 0) { //fastest starts as empty array
+            fastest.push(timeMS);
+        } else if (fastest[0] > timeMS) {
+            fastest.push(timeMS);
+            fastest.shift();
+            fastestPos = [i];
+        }
+    };
+    
+    const aveMS = totTime / resultInfo.length; //converting fastest in ms to useable string
+    const aveMS2 = new Date(aveMS);
+    const aveMS3 = aveMS2.toString();
+    const aveTime = aveMS3.slice(19, 24);
 
     try{
         if(req.userFound) {
@@ -146,17 +184,17 @@ app.get('/profile', auth.isLoggedIn, (req, res) => {
                     },
                 results:
                     {
-                        totalQuiz: 4,
-                        totalScore: 32,
-                        AvScore: 8,
-                        fastTime: "1:22",
-                        avTime: "2:17",
-                        position: "1st",
-                        topPosition: "1st", //needs an if but hard-coded for now
-                        score: 9,
-                        time: "0:58",
-                        category: "General Knowledge",
-                        difficulty: "Easy"
+                        totalQuiz: quizzes,
+                        totalScore: totScores,
+                        AvScore: aveScore,
+                        fastTime: resultInfo[fastestPos].time,
+                        avTime: aveTime,
+                        // position: "1st",
+                        // topPosition: "1st", //needs an if but hard-coded for now
+                        score: resultInfo[resultInfo.length - 1].score,
+                        time: resultInfo[resultInfo.length - 1].time,
+                        category: resultInfo[resultInfo.length - 1].category,
+                        difficulty: resultInfo[resultInfo.length - 1].difficulty
                     }
                 }
             );

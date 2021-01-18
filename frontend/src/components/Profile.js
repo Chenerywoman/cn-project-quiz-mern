@@ -64,16 +64,20 @@ const Profile = () => {
                     <h5>Average Time: </h5>
                     <p>{result.avTime}</p>
 
-                    <h5>Ranking: </h5>
-                    <p>{result.position}</p>
+                    {/* <h5>Ranking: </h5>
+                    <p>{result.position}</p> */}
                 </div>    
             </div>
 
             <div id="right-side" >
-                <div id="leaderboard-info">{/*Require if statement*/}
-                    <h2>Congratulations!</h2>
-                    <h5>You are {result.topPosition} on the Leaderboard</h5>
-                </div>  
+                {//<div id="leaderboard-info">{/*Require if statement*/}
+                }
+                    {//<h2>Congratulations!</h2>
+                    }
+                    {//<h5>You are {result.topPosition} on the Leaderboard</h5>
+                    }
+                {//</div>}  
+                }
 
                 <div id="last-quiz-info">
                     <h3>The Results of Your Last Quiz are:</h3>
