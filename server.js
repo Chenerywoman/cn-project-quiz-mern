@@ -112,14 +112,17 @@ app.post('/login', async (req, res) => {
 //quiz scores
 app.post('/quiz', auth.isLoggedIn, async (req, res) => {
     console.log("reaching backend"); //checking data is received on backend
-    // console.log(req.body.score);
-    // console.log(req.body.time);
-    // console.log(req.body.category);
-    // console.log(req.body.difficulty);
-    // console.log(req.userFound._id);
+    console.log(req.body.score);
+    console.log(req.body.time);
+    console.log(req.body.category);
+    console.log(req.body.difficulty);
+    console.log(req.userFound._id);
+    console.log('req.userFound')
+    console.log(req.userFound)
+    
     try {
 
-        if (req.userFoumd) {
+        if (req.userFound) {
 
             await Result.create({
                 score: req.body.score,
