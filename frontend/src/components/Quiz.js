@@ -171,6 +171,7 @@ const Quiz = (props) => {
 
         const body = {
             score: score,
+            time: "1:36",
             category: categoryName,
             difficulty: difficulty
         }

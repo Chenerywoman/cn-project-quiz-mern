@@ -16,6 +16,7 @@ const app = express();
 app.use(express.urlencoded({extended: false})); 
 app.use(express.json({extended: false}));
 app.use(cors());
+app.use(cookieParser());
 
 mongoose.connect( process.env.DB_URL, { 
     useNewUrlParser: true,
@@ -109,7 +110,7 @@ app.post('/login', async (req, res) => {
 });
 
 //quiz scores
-app.post('/quiz', (req, res) => {
+app.post('/quiz', async (req, res) => {
     console.log("reaching backend"); //checking data is received on backend
     console.log(req.body);
 
@@ -127,32 +128,47 @@ app.post('/quiz', (req, res) => {
 });
 
 //Pull data for Profile Component
-app.get('/profile', (req, res) => {
-    //const userInfo = User.find(); //DB pull for user info
+app.get('/profile', auth.isLoggedIn, (req, res) => {
+    const userInfo = User.find(); //DB pull for user info
     //const resultsInfo = Results.find(); //DB pull for results info
 
-    res.json({
-        users:
-            {
-                name: "Dave",
-                email: "email@domain.com"
-            },
-        results:
-            {
-                totalQuiz: 4,
-                totalScore: 32,
-                AvScore: 8,
-                fastTime: "1:22",
-                avTime: "2:17",
-                position: "1st",
-                topPosition: "1st", //needs an if but hard-coded for now
-                score: 9,
-                time: "0:58",
-                category: "General Knowledge",
-                difficulty: "Easy"
-            }
+    try{
+        if(req.userFound) {
+            res.json({
+                users:
+                    {
+                        name: req.userFound.name,
+                        email: req.userFound.email,
+                    },
+                results:
+                    {
+                        totalQuiz: 4,
+                        totalScore: 32,
+                        AvScore: 8,
+                        fastTime: "1:22",
+                        avTime: "2:17",
+                        position: "1st",
+                        topPosition: "1st", //needs an if but hard-coded for now
+                        score: 9,
+                        time: "0:58",
+                        category: "General Knowledge",
+                        difficulty: "Easy"
+                    }
+                }
+            );
+        } else {
+            res.json({ //sending message to front-end
+                message: "user not found"
+            });
         }
-    );
+    } catch(error) {
+        res.json({ //sending message to front-end
+            message: "login not found"
+        });
+    };
+
+
+    
 });
 
 //Pull data for League Component
