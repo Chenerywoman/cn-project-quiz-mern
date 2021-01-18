@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Link} from 'react-router-dom';
 
 const Selection = (props) => {
@@ -11,8 +11,22 @@ const Selection = (props) => {
         event.preventDefault();
         console.log("form handled");
     };
+    
+
+    useEffect(() => {
+
+        const setCategoryToGeneraKnowledge = () => updateCategory("9");
+        setCategoryToGeneraKnowledge();
+
+    },[]);
 
 
+    useEffect(() => {
+
+        const setLevelToEasy = () => updateDifficulty("easy");
+        setLevelToEasy();
+        
+    },[]);
 
     return (
         <div>
