@@ -144,9 +144,9 @@ const Quiz = (props) => {
 
         return questionsandAnswers;
     
-    },
-    []
-  )
+        },
+        []
+      )
 
     
 

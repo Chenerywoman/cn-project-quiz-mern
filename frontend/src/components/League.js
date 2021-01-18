@@ -4,7 +4,8 @@ import axios from 'axios';
 const League = () => {
     const [user, setUser] = useState({});
     const [result, setResult] = useState({});
-
+    const [rows, setRows] = useState([{position: 1,}, {position: 2,}, {position: 3,}, {position: 4,}, {position: 5,}, {position: 6,}, {position: 7,}, {position: 8,}, {position: 9,}, {position: 10,}]); 
+    
     useEffect(() => {
         fetchData()
     }, []);
@@ -30,14 +31,19 @@ const League = () => {
                     <th>Category</th>
                     <th>Difficulty</th>
                 </tr>
-                <tr>
-                    <td>1</td>
-                    <td>{result.score}</td>
-                    <td>{result.time}</td>
-                    <td>{user.name}</td>
-                    <td>{result.category}</td>
-                    <td>{result.difficulty}</td>
-                </tr>
+                {rows.map((row) => {
+                    return (
+                        <tr>
+                            <td>{row.position}</td>
+                            <td>{/*result.score*/}</td>
+                            <td>{/*result.time*/}</td>
+                            <td>{/*user.name*/}</td>
+                            <td>{/*result.category*/}</td>
+                            <td>{/*result.difficulty*/}</td>
+                        </tr>
+                    )
+                } )}
+                
             </div>
         </div>
     )
