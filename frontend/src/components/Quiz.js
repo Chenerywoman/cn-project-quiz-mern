@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import axios from 'axios';
 import {useHistory, Redirect} from 'react-router-dom';
+import Timer from './Timer';
 
 const Quiz = (props) => {
 
@@ -18,10 +19,14 @@ const Quiz = (props) => {
     const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
     const [categoryName, setCategoryName] = useState("");
     const [noResults, setNoResults] = useState(false);
+    const [timeTaken, setTimeTaken] = useState(0);
+
     // const [hasRefreshed, setHasRefreshed] = useState(false);
-   
-   
-    // const [backendResponse, setBackendResponse] = useState("");
+  
+    const getTimeTaken = useCallback((time) => {
+
+      setTimeTaken(time);
+    }, [])
     
     const getCategoryName = (catNumber) => {
 
@@ -101,7 +106,6 @@ const Quiz = (props) => {
             categoryName = "Cartoon and Animation";
             break;
           default:
-            // test category working
             categoryName = ""
         }
          
@@ -150,8 +154,6 @@ const Quiz = (props) => {
     []
   )
 
-    
-
     const onRadioChange = (answerInd, questionInd, event) => {
 
         // update answers with true or false
@@ -160,13 +162,10 @@ const Quiz = (props) => {
         answersPlaceholder.splice(questionInd, 1, correctOrIncorrect);
 
         setAnswers(answersPlaceholder)
-
-        // update questions that 
-
     }
 
     const formHandler = async (event) => {
-        console.log("in form handler")
+        
         event.preventDefault();
 
         const score = answers.reduce((acc, curr, ind, arr) => {
@@ -177,7 +176,7 @@ const Quiz = (props) => {
 
         const body = {
             score: score,
-            time: "1:36",
+            time: timeTaken,
             category: categoryName,
             difficulty: difficulty
         }
@@ -216,13 +215,6 @@ const Quiz = (props) => {
               console.log('in sessionToken if')
               const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
               console.log(response)
-
-              // forcing a none 0 response code
-              // const response = await axios.get(`https://opentdb.com/api.php?amount=Ten&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
-              // console.log(response)
-  
-              // forcing response code 4 - doesn't work as existing session token is retrieved from the api in updateSessionToken
-              // response.data.response_code = 4;
 
               if (response.data && response.data.response_code === 1) {
   
@@ -274,14 +266,6 @@ const Quiz = (props) => {
       
     }, [sessionToken, getSessionToken, updateSessionToken, category, difficulty, scrambledAnswersCallBack, noResults])
 
-  
-    console.log(sessionToken)
-    // console.log('answers')
-    // console.log(answers)
-    console.log("category, difficulty")
-    console.log(category)
-    console.log(difficulty)
-
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
@@ -290,6 +274,8 @@ const Quiz = (props) => {
             <h1>Quiz Page</h1>
             <h2>Category:{categoryName} </h2>
             <h2>Difficulty:{difficulty}</h2> 
+           
+              Timer:<Timer getTimeTaken={getTimeTaken}/>
                 <form onSubmit={formHandler}>
                     {questions.map((question, questionInd) => {
                         return (
