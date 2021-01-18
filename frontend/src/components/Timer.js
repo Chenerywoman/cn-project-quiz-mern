@@ -1,22 +1,43 @@
 import React, {useEffect, useState} from 'react';
 
-const Timer = () => {
+const Timer = ({getTimeTaken}) => {
   
-  const [seconds, setSeconds] = useState(0);
+  const [seconds, setSeconds] = useState('00');
+  const [minutes, setMinutes] = useState('00');
+  const [counter, setCounter] = useState(0);
   
   useEffect(() => {
+
+
     let interval = setInterval(() => {
-        setSeconds(seconds => seconds + 1);
+
+      const secondCounter = counter % 60;
+      const minuteCounter = Math.floor(counter / 60);
+
+      const computedSeconds = String(secondCounter).length === 1 ? `0${secondCounter}` : secondCounter;
+      const computedMinutes = String(minuteCounter).length === 1 ? `0${minuteCounter}` : minuteCounter;
+      
+      setSeconds(computedSeconds);
+      setMinutes(computedMinutes);
+      setCounter(counter => counter + 1);
+
       }, 1000)
 
-    return () => clearInterval(interval);
-  }, [seconds])
+    return () => {
+      
+      getTimeTaken(`${minutes}:${seconds}`)
+      clearInterval(interval)
+    
+    }
+  
+  }, [counter, getTimeTaken])
 
-  console.log(seconds)
   return (
     <>
       <div>
-      {seconds}s
+      <span className="minute">{minutes}</span>
+      <span>:</span>
+      <span className="second">{seconds}</span>
       </div>
     </>
   )
