@@ -34,8 +34,8 @@ app.get('/', (req, res) => {
 app.post('/register', async (req, res) => {
     //test
     console.log("reaching register on backend");
-    console.log(req.body.userPassword);
-    console.log(req.body.confPassword);
+    // console.log(req.body.userPassword);
+    // console.log(req.body.confPassword);
 
     //check that the passwords are the same
     if (req.body.userPassword !== req.body.confPassword) {
@@ -110,20 +110,23 @@ app.post('/login', async (req, res) => {
 });
 
 //quiz scores
-app.post('/quiz', async (req, res) => {
+app.post('/quiz', auth.isLoggedIn, async (req, res) => {
     console.log("reaching backend"); //checking data is received on backend
-    console.log(req.body);
+    console.log(req.body.score);
+    console.log(req.body.time);
+    console.log(req.body.category);
+    console.log(req.body.difficulty);
 
-    // await Results.create({
-    //     score: req.body.score,
-    //     category: req.body.category,
-    //     difficulty: req.body.difficulty,
-    //     time: req.body.time,
-    //     id: req.body.id, //add later after User db created
-    // })
+    await Result.create({
+        score: req.body.score,
+        time: req.body.time,
+        category: req.body.category,
+        difficulty: req.body.difficulty,
+        id: req.userFound._id, //add later after User db created
+    })
 
     res.json({ //sending message to front-end
-        message: "Message received"
+        message: "Results logged"
     });
 });
 
