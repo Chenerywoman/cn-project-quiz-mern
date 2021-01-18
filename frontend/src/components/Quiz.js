@@ -189,7 +189,9 @@ const Quiz = (props) => {
     }
 
     useEffect(() => {
-      
+      console.log('session token in useEffect')
+      console.log(sessionToken)
+
       const fetchQuestions = async () => {
         console.log('in fetch questions')
         getCategoryName(category)
@@ -205,6 +207,9 @@ const Quiz = (props) => {
               // const response = await axios.get(`https://opentdb.com/api.php?amount=Ten&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
               // console.log(response)
   
+              // forcing response code 4 - doesn't work as existing session token is retrieved from the api in updateSessionToken
+              // response.data.response_code = 4;
+
               if (response.data && response.data.response_code === 1) {
   
                   console.log("in response code 1 if ");
