@@ -123,7 +123,7 @@ app.post('/quiz', auth.isLoggedIn, async (req, res) => {
     //     time: req.body.time,
     //     category: req.body.category,
     //     difficulty: req.body.difficulty,
-    //     id: req.userFound._id, //add later after User db created
+    //     user: req.userFound._id, //add later after User db created
     // })
 
     res.json({ //sending message to front-end

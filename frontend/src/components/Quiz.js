@@ -1,8 +1,10 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import axios from 'axios';
-import {Link, Redirect} from 'react-router-dom';
+import {useHistory, Redirect} from 'react-router-dom';
 
 const Quiz = (props) => {
+
+  const history = useHistory();
   
     const {
         category,
@@ -10,7 +12,7 @@ const Quiz = (props) => {
         sessionToken,
         getSessionToken, 
         updateSessionToken
-    } = props
+    } = props;
    
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
@@ -160,7 +162,7 @@ const Quiz = (props) => {
     }
 
     const formHandler = async (event) => {
-
+        console.log("in form handler")
         event.preventDefault();
 
         const score = answers.reduce((acc, curr, ind, arr) => {
@@ -185,12 +187,16 @@ const Quiz = (props) => {
         const response = await axios.post('/quiz', body, config);
         console.log(response);
 
-        // setBackendResponse(response.data.message)
+        if(response.data.message === "Results logged") {
+          history.push('/profile'); 
+      };
 
     }
 
     useEffect(() => {
-      
+      console.log('session token in useEffect')
+      console.log(sessionToken)
+
       const fetchQuestions = async () => {
         console.log('in fetch questions')
         getCategoryName(category)
@@ -206,6 +212,9 @@ const Quiz = (props) => {
               // const response = await axios.get(`https://opentdb.com/api.php?amount=Ten&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
               // console.log(response)
   
+              // forcing response code 4 - doesn't work as existing session token is retrieved from the api in updateSessionToken
+              // response.data.response_code = 4;
+
               if (response.data && response.data.response_code === 1) {
   
                   console.log("in response code 1 if ");
@@ -286,7 +295,7 @@ const Quiz = (props) => {
                             )
                         })
                     }
-                    <Link to = "/profile" ><input type="submit" value="Submit" /></Link>
+                    <input type="submit" value="Submit" />
                 </form>            
             </div>
         )
