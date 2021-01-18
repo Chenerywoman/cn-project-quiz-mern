@@ -191,9 +191,14 @@ const Quiz = (props) => {
         const response = await axios.post('/quiz', body, config);
         console.log(response);
 
-        if(response.data.message === "Results logged") {
-          history.push('/profile'); 
-      };
+        if (response.data.message === "Results logged") {
+
+          history.push('/profile');
+
+        } else if (response.data.message === "not logged-in"){
+
+          history.push('/')
+        }
 
     }
 
