@@ -18,6 +18,8 @@ const Quiz = (props) => {
     const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
     const [categoryName, setCategoryName] = useState("");
     const [noResults, setNoResults] = useState(false);
+    // const [hasRefreshed, setHasRefreshed] = useState(false);
+   
    
     // const [backendResponse, setBackendResponse] = useState("");
     
@@ -144,20 +146,22 @@ const Quiz = (props) => {
 
         return questionsandAnswers;
     
-        },
-        []
-      )
+    },
+    []
+  )
 
     
 
     const onRadioChange = (answerInd, questionInd, event) => {
 
+        // update answers with true or false
         let correctOrIncorrect = questions[questionInd].answers[answerInd].correct;
-
         const answersPlaceholder = [...answers]
         answersPlaceholder.splice(questionInd, 1, correctOrIncorrect);
 
         setAnswers(answersPlaceholder)
+
+        // update questions that 
 
     }
 
@@ -207,7 +211,7 @@ const Quiz = (props) => {
               console.log('in sessionToken if')
               const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
               console.log(response)
-  
+
               // forcing a none 0 response code
               // const response = await axios.get(`https://opentdb.com/api.php?amount=Ten&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
               // console.log(response)
@@ -235,7 +239,10 @@ const Quiz = (props) => {
               } else if (response.data && response.data.response_code === 4) {
   
                   console.log("in response code 4 else if ");
-                  updateSessionToken(sessionToken)
+
+                  // getSessionToken()
+                  updateSessionToken(sessionToken);
+                  // setHasRefreshed(!hasRefreshed);
   
               }
   
@@ -287,7 +294,7 @@ const Quiz = (props) => {
                                         return(
                                             <div key={answerInd}>
                                                 <label htmlFor={question.number}>{answer.answer}</label>
-                                                <input type="radio" name={question.number} value={answer.correct} onChange={(event) => onRadioChange(answerInd, questionInd, event)} required/>
+                                                <input type="radio" name={question.number} value={answer.correct} onChange={(event) => onRadioChange(answerInd, questionInd, event)}/>
                                             </div>
                                         )
                                     })}
