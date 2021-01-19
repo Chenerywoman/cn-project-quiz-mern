@@ -6,10 +6,9 @@ import axios from 'axios';
 const Profile = () => {
     const [user, setUser] = useState({});
     const [result, setResult] = useState({});
-    const [backendResponse, setBackendResponse] = useState("");
 
     useEffect(() => {
-        fetchData()
+        fetchData();
     }, []);
 
     const history = useHistory();
@@ -17,8 +16,6 @@ const Profile = () => {
     const fetchData = async () => {
         
         const response = await axios.get('/profile');
-        setBackendResponse(response.data.message);
-        console.log(response.data.message);
 
         if(response.data.message === "user not found" || response.data.message === "login not found" ) {
             history.push('/login');

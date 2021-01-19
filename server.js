@@ -123,7 +123,7 @@ app.post('/quiz', auth.isLoggedIn, async (req, res) => {
         time: req.body.time,
         category: req.body.category,
         difficulty: req.body.difficulty,
-        user: req.userFound._id, //add later after User db created
+        user: req.userFound._id, 
     })
 
     res.json({ //sending message to front-end
@@ -216,31 +216,30 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
 });
 
 //Pull data for League Component
-app.get('/league', async (req, res) => {
-    const resultInfo = await Result.find(); //DB pull for results info
-    const sortedResults = [];
+app.get('/league', auth.isLoggedIn, async (req, res) => {
+    const resultInfo = await Result.find().populate('user', 'name'); //DB pull for results info
 
     resultInfo.sort(function (result1, result2) {
         if (result1.score > result2.score) return -1;
         if (result2.score > result1.score) return 1;
-
+        if (result1.score === result2.score) {
+            if (result1.time > result2.time) return 1;
+            if (result2.time > result1.time) return -1;
+        };
     });
-    console.log(resultInfo);
+    const topTen = resultInfo.slice(0, 10);
+
+    // for (let i = 0; i < topTen.length; i++) {
+    //     console.log(topTen[i])
+    //     topTen[i].position = "test";
+    // };
+
+    // console.log(topTen);
 
 
 
     res.json({
-        users:
-            {
-                name: "Dave",
-            },
-        results:
-            {
-                score: 9,
-                time: "0:58",
-                category: "General Knowledge",
-                difficulty: "Easy"
-            }
+        results: topTen
         }
     );
 });
