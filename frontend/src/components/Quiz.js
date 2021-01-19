@@ -309,6 +309,9 @@ const Quiz = (props) => {
 
 
     const formHandler = async (event) => {
+      console.log('in form handler')
+      console.log(event.target[0])
+      console.log(event.target.input[0])
         
       event.preventDefault();
 
