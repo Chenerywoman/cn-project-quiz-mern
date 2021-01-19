@@ -10,9 +10,6 @@ const Quiz = (props) => {
     const {
         category,
         difficulty,
-        sessionToken,
-        getSessionToken, 
-        updateSessionToken
     } = props;
    
     const [questions, setQuestions] = useState([]);
@@ -21,6 +18,19 @@ const Quiz = (props) => {
     const [noResults, setNoResults] = useState(false);
     const [timeTaken, setTimeTaken] = useState(0);
     // const [hasRefreshed, setHasRefreshed] = useState(false);
+    const [sessionToken, setSessionToken] = useState("");
+
+    const getSessionToken = useCallback(async () => {  
+      console.log('in get session token') 
+      const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
+      setSessionToken(sessionTokenResponse.data.token);
+    }, []);
+  
+    const updateSessionToken = useCallback (async (token) => {
+      console.log('in update session token')
+      const updatedSessionTokenResponse = await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${token}`);
+      setSessionToken(updatedSessionTokenResponse.data.token)
+    });
   
     const getTimeTaken = useCallback((time) => {
 
@@ -208,6 +218,7 @@ const Quiz = (props) => {
 
         if (sessionToken) {
             console.log('in sessionToken if')
+
             const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
             console.log(response)
 
@@ -232,9 +243,7 @@ const Quiz = (props) => {
 
                 console.log("in response code 4 else if ");
 
-                // getSessionToken()
-                updateSessionToken(sessionToken);
-                // setHasRefreshed(!hasRefreshed);
+               updateSessionToken(sessionToken)
 
             }
 
@@ -254,74 +263,18 @@ const Quiz = (props) => {
         setNoResults(true);
       }
 
-    },[category, difficulty, getSessionToken,scrambledAnswersCallBack, sessionToken,updateSessionToken]);
+    },[category, difficulty, getSessionToken,scrambledAnswersCallBack, sessionToken]);
 
     useEffect(() => {
       console.log('session token in useEffect')
       console.log(sessionToken)
 
-      // const fetchQuestions = async () => {
-      //   console.log('in fetch questions')
-      //   getCategoryName(category)
-  
-      //   try {
-  
-      //     if (sessionToken) {
-      //         console.log('in sessionToken if')
-      //         const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
-      //         console.log(response)
-
-      //         if (response.data && response.data.response_code === 1) {
-  
-      //             console.log("in response code 1 if ");
-      //             console.log(response);
-      //             setNoResults(true);
-  
-      //         } else if (response.data && response.data.response_code === 2) {
-  
-      //           console.log("in response code 2 else if");
-      //           console.log(response)
-      //           setNoResults(true);
-  
-      //         } else if (response.data && response.data.response_code === 3) {
-  
-      //             console.log("in response code 3 else if ");
-      //             getSessionToken();
-  
-      //         } else if (response.data && response.data.response_code === 4) {
-  
-      //             console.log("in response code 4 else if ");
-
-      //             // getSessionToken()
-      //             updateSessionToken(sessionToken);
-      //             // setHasRefreshed(!hasRefreshed);
-  
-      //         }
-  
-      //         let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
-  
-      //         setQuestions(questionsAndScrambledAnswers);
-  
-      //     } else {
-      //       console.log("in session token else");
-      //       getSessionToken();
-  
-      //     }
-  
-      //   } catch (error) {
-      //     console.log("in error block")
-      //     console.log(error)
-      //     setNoResults(true);
-      //   }
-  
-      // };
-      
       fetchQuestions()
       
       
-    }, [sessionToken, getSessionToken, updateSessionToken, category, difficulty, scrambledAnswersCallBack, noResults, fetchQuestions])
+    }, [sessionToken, getSessionToken, category, difficulty, scrambledAnswersCallBack, noResults, fetchQuestions])
 
-
+      console.log(sessionToken)
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
