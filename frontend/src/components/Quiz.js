@@ -17,25 +17,49 @@ const Quiz = (props) => {
     const [categoryName, setCategoryName] = useState("");
     const [noResults, setNoResults] = useState(false);
     const [timeTaken, setTimeTaken] = useState(0);
-    // const [hasRefreshed, setHasRefreshed] = useState(false);
     const [sessionToken, setSessionToken] = useState("");
+    const [tokenChanged, setTokenChanged] = useState(false);
 
-    const getSessionToken = useCallback(async () => {  
-      console.log('in get session token') 
-      const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
-      setSessionToken(sessionTokenResponse.data.token);
-    }, []);
-  
-    const updateSessionToken = useCallback (async (token) => {
-      console.log('in update session token')
-      const updatedSessionTokenResponse = await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${token}`);
-      setSessionToken(updatedSessionTokenResponse.data.token)
-    });
-  
     const getTimeTaken = useCallback((time) => {
 
       setTimeTaken(time);
     }, [])
+
+    //inside useEffect
+  //const questions = fetchQuestions() (in any case)
+      //Happy path
+      // store questions in state
+      //Sad path
+      // response === 3
+      // getSessionToken()
+      // response === 4
+      // refreshToken()
+      //const questions = fetchQuestions()      
+      //store questions in state
+//[sessionToken]
+
+
+    const getSessionToken = async () => {  
+      console.log('in get session token') 
+      const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
+      setSessionToken(sessionTokenResponse.data.token);
+    };
+  
+    const updateSessionToken = async (token) => {
+      console.log('in update session token')
+
+      try {
+
+        await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${token}`);
+
+      } catch (error){
+          
+        console.log(error)
+        setNoResults(true);
+
+      }
+    };
+  
     
     const getCategoryName = (catNumber) => {
 
@@ -121,158 +145,187 @@ const Quiz = (props) => {
         setCategoryName(categoryName);
     }    
 
-    const decodeText = (encodedText) => {
+    const fetchQuestions = async () => {
+          console.log('in fetch questions')
+          console.log(sessionToken)
 
-          let text = document.createElement('textarea');
-          text.innerHTML = encodedText;
-          let decodedText = text.value;
+          if (sessionToken) {
 
-          return decodedText;
+            try {
 
-      };
+                const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
 
-      const scrambledAnswersCallBack = useCallback(
-        (questions) => {
-        
-        const questionsandAnswers = questions.reduce((acc, curr, ind) => {
-    
-            let answers = [{answer: decodeText(curr.correct_answer), correct: true, selected: false}, {answer: decodeText(curr.incorrect_answers[0]), correct:false, selected: false}, {answer: decodeText(curr.incorrect_answers[1]), correct:false, selected: false}, {answer: decodeText(curr.incorrect_answers[2]), correct:false, selected: false}];
-            let mixedAnswers = [];
-            
-            let num = 4;
-            
-            for (let i = 0; i < 4; i++){
-    
-                let randInt = Math.floor(Math.random() * num);
-    
-                num--
-    
-                mixedAnswers.push(answers[randInt]);
-                answers.splice(randInt, 1)
-    
+
+                if (response.data && response.data.response_code === 0) {
+
+                    let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
+
+                    setQuestions(questionsAndScrambledAnswers);
+                    getCategoryName(category);
+
+                } else if (response.data && response.data.response_code === 1) {
+
+                    console.log("in response code 1 if ");
+                    setNoResults(true);
+
+                } else if (response.data && response.data.response_code === 2) {
+
+                    console.log("in response code 2 else if");
+                    setNoResults(true);
+
+                } else if (response.data && response.data.response_code === 3) {
+
+                    console.log("in response code 3 else if ");
+                    getSessionToken();
+
+                } else if (response.data && response.data.response_code === 4) {
+
+                  console.log("in response code 4 else if ");
+                  updateSessionToken(sessionToken)
+                  setTokenChanged(!tokenChanged)
+                
+                } 
+
+            } catch (error) {
+              console.log(error)
+              setNoResults(true);
             }
-    
-            acc.push({number: `Question${ind}`, question: decodeText(curr.question), answers: mixedAnswers});
-           return acc;
-    
+
+          } else {
+            getSessionToken();
+          }
+      
+  } 
+
+  const decodeText = (encodedText) => {
+  
+    let text = document.createElement('textarea');
+    text.innerHTML = encodedText;
+    let decodedText = text.value;
+
+    return decodedText;
+
+};
+
+    const scrambledAnswersCallBack = useCallback(
+      (questions) => {
+
+        const questionsandAnswers = questions.reduce((acc, curr, ind) => {
+
+          let answers = [{
+            answer: decodeText(curr.correct_answer),
+            correct: true,
+            selected: false
+          }, {
+            answer: decodeText(curr.incorrect_answers[0]),
+            correct: false,
+            selected: false
+          }, {
+            answer: decodeText(curr.incorrect_answers[1]),
+            correct: false,
+            selected: false
+          }, {
+            answer: decodeText(curr.incorrect_answers[2]),
+            correct: false,
+            selected: false
+          }];
+          let mixedAnswers = [];
+
+          let num = 4;
+
+          for (let i = 0; i < 4; i++) {
+
+            let randInt = Math.floor(Math.random() * num);
+
+            num--
+
+            mixedAnswers.push(answers[randInt]);
+            answers.splice(randInt, 1)
+
+          }
+
+          acc.push({
+            number: `Question${ind}`,
+            question: decodeText(curr.question),
+            answers: mixedAnswers
+          });
+          return acc;
+
         }, [])
 
         return questionsandAnswers;
-    
-    },
-    []
-  )
+
+      },
+      []
+    )
 
     const onRadioChange = (answerInd, questionInd, event) => {
 
-        // update answers with true or false
-        let correctOrIncorrect = questions[questionInd].answers[answerInd].correct;
-        const answersPlaceholder = [...answers]
-        answersPlaceholder.splice(questionInd, 1, correctOrIncorrect);
+      // update answers with true or false
+      let correctOrIncorrect = questions[questionInd].answers[answerInd].correct;
+      const answersPlaceholder = [...answers]
+      answersPlaceholder.splice(questionInd, 1, correctOrIncorrect);
 
-        setAnswers(answersPlaceholder)
-    }
+      setAnswers(answersPlaceholder)
+  }
+
 
     const formHandler = async (event) => {
         
-        event.preventDefault();
+      event.preventDefault();
 
-        const score = answers.reduce((acc, curr, ind, arr) => {
+      const score = answers.reduce((acc, curr, ind, arr) => {
 
-            return curr ? acc + 1 : acc;
+          return curr ? acc + 1 : acc;
 
-        }, 0);
+      }, 0);
 
-        const body = {
-            score: score,
-            time: timeTaken,
-            category: categoryName,
-            difficulty: difficulty
-        }
-
-        const config = {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }
-
-        const response = await axios.post('/quiz', body, config);
-        console.log(response);
-
-        if (response.data.message === "Results logged") {
-
-          history.push('/profile');
-
-        } else if (response.data.message === "not logged-in"){
-
-          history.push('/')
-        }
-
-    }
-
-    const fetchQuestions = useCallback(async () => {
-      console.log('in fetch questions')
-      getCategoryName(category)
-
-      try {
-
-        if (sessionToken) {
-            console.log('in sessionToken if')
-
-            const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
-            console.log(response)
-
-            if (response.data && response.data.response_code === 1) {
-
-                console.log("in response code 1 if ");
-                console.log(response);
-                setNoResults(true);
-
-            } else if (response.data && response.data.response_code === 2) {
-
-              console.log("in response code 2 else if");
-              console.log(response)
-              setNoResults(true);
-
-            } else if (response.data && response.data.response_code === 3) {
-
-                console.log("in response code 3 else if ");
-                getSessionToken();
-
-            } else if (response.data && response.data.response_code === 4) {
-
-                console.log("in response code 4 else if ");
-
-               updateSessionToken(sessionToken)
-
-            }
-
-            let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
-
-            setQuestions(questionsAndScrambledAnswers);
-
-        } else {
-          console.log("in session token else");
-          getSessionToken();
-
-        }
-
-      } catch (error) {
-        console.log("in error block")
-        console.log(error)
-        setNoResults(true);
+      const body = {
+          score: score,
+          time: timeTaken,
+          category: categoryName,
+          difficulty: difficulty
       }
 
-    },[category, difficulty, getSessionToken,scrambledAnswersCallBack, sessionToken]);
+      const config = {
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      }
+
+      const response = await axios.post('/quiz', body, config);
+      console.log(response);
+
+      if (response.data.message === "Results logged") {
+
+        history.push('/profile');
+
+      } else if (response.data.message === "not logged-in"){
+
+        history.push('/')
+      }
+
+  }
+
+     //inside useEffect
+  //const questions = fetchQuestions() (in any case)
+      //Happy path
+      // store questions in state
+      //Sad path
+      // response === 3
+      // getSessionToken()
+      // response === 4
+      // refreshToken()
+      //const questions = fetchQuestions()      
+      //store questions in state
+//[sessionToken]
 
     useEffect(() => {
-      console.log('session token in useEffect')
-      console.log(sessionToken)
 
-      fetchQuestions()
-      
-      
-    }, [sessionToken, getSessionToken, category, difficulty, scrambledAnswersCallBack, noResults, fetchQuestions])
+      getCategoryName(category);
+      fetchQuestions();
+
+    }, [sessionToken, tokenChanged])
 
       console.log(sessionToken)
       if (noResults) {
@@ -282,7 +335,7 @@ const Quiz = (props) => {
           <div>
             <h1>Quiz Page</h1>
             <h2>Category:{categoryName} </h2>
-            <h2>Difficulty:{difficulty}</h2> 
+            <h2>Difficulty:{difficulty}</h2>  
            
               Timer:<Timer getTimeTaken={getTimeTaken}/>
                 <form onSubmit={formHandler}>
