@@ -31,7 +31,6 @@ const Profile = () => {
         fetchData()
     }, [fetchData]);
 
-    console.log(backendResponse)
     return (
         <div>
             <h1>Profile Page</h1>
