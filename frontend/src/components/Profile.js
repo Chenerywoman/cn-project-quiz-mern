@@ -6,15 +6,16 @@ import axios from 'axios';
 const Profile = () => {
     const [user, setUser] = useState({});
     const [result, setResult] = useState({});
-    const [backendResponse, setBackendResponse] = useState("");
+  
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const history = useHistory();
 
     const fetchData = useCallback (async () => {
         
         const response = await axios.get('/profile');
-        setBackendResponse(response.data.message);
-        console.log(response.data.message);
 
         if(response.data.message === "user not found" || response.data.message === "login not found" ) {
             history.push('/login');
@@ -64,16 +65,20 @@ const Profile = () => {
                     <h5>Average Time: </h5>
                     <p>{result.avTime}</p>
 
-                    <h5>Ranking: </h5>
-                    <p>{result.position}</p>
+                    {/* <h5>Ranking: </h5>
+                    <p>{result.position}</p> */}
                 </div>    
             </div>
 
             <div id="right-side" >
-                <div id="leaderboard-info">{/*Require if statement*/}
-                    <h2>Congratulations!</h2>
-                    <h5>You are {result.topPosition} on the Leaderboard</h5>
-                </div>  
+                {//<div id="leaderboard-info">{/*Require if statement*/}
+                }
+                    {//<h2>Congratulations!</h2>
+                    }
+                    {//<h5>You are {result.topPosition} on the Leaderboard</h5>
+                    }
+                {//</div>}  
+                }
 
                 <div id="last-quiz-info">
                     <h3>The Results of Your Last Quiz are:</h3>
