@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
@@ -13,9 +13,10 @@ const Profile = () => {
 
     const history = useHistory();
 
-    const fetchData = useCallback (async () => {
+    const fetchData = async () => {
         
         const response = await axios.get('/profile');
+        console.log(response.data.message);
 
         if(response.data.message === "user not found" || response.data.message === "login not found" ) {
             history.push('/login');
@@ -23,13 +24,7 @@ const Profile = () => {
             setUser(response.data.users);
             setResult(response.data.results);
         };
-        
-
-    },[history]);
-
-    useEffect(() => {
-        fetchData()
-    }, [fetchData]);
+    };
 
     return (
         <div>
@@ -95,6 +90,7 @@ const Profile = () => {
                     <p>{result.difficulty}</p>
                 </div>   
             </div>
+            
 
         </div>
     )

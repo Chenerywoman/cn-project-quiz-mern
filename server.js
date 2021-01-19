@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser'); //needs to be initialised
 const auth = require('./middleware/auth');
+const { response } = require('express');
 
 dotenv.config( { path: './.env' } );
 
@@ -34,8 +35,6 @@ app.get('/', (req, res) => {
 app.post('/register', async (req, res) => {
     //test
     console.log("reaching register on backend");
-    // console.log(req.body.userPassword);
-    // console.log(req.body.confPassword);
 
     //check that the passwords are the same
     if (req.body.userPassword !== req.body.confPassword) {
@@ -70,7 +69,7 @@ app.post('/login', auth.isLoggedIn, async (req, res) => {
         res.json({
             message: "Already logged in"
         });
-    } else{
+    } else {
         console.log("reaching register on backend");
 
         try{
@@ -154,50 +153,53 @@ app.post('/quiz', auth.isLoggedIn, async (req, res) => {
 
 //Pull data for Profile Component
 app.get('/profile', auth.isLoggedIn, async (req, res) => {
-    const resultInfo = await Result.find({ user: req.userFound._id });
-    console.log(resultInfo);
+    try{    
+        const resultInfo = await Result.find({ user: req.userFound._id });
+        console.log(resultInfo);
 
-    //stat calculation
-    const quizzes = resultInfo.length;
-    let totScores = 0;
-    let times = [];
-    for(let i = 0; i < resultInfo.length; i++) {
-        totScores += resultInfo[i].score; 
-        times.push(resultInfo[i].time); //need to convert from str
-    };
-    const aveScore =  totScores/quizzes;
-
-    //convert times from string
-    let newArr = [];
-    let fastest = [];
-    let fastestPos = 0;
-    let totTime = 0;
-
-//Probably need to build in if takes 10 mins or longer
-    for(let i = 0; i < times.length; i++) {
-        let hms = "01:0" + times[i]; //gives hours:minutes:seconds +1hour otherwise it won't work
-        let fullTime = new Date("1970-01-01T" + hms); //gives full date and time including date of 1/1/70 to allow you to extract time as milliseconds
-
-        timeMS = fullTime.getTime(); //extracts time in milliseconds
-        newArr.push(timeMS); //pushes ms to an array
-        totTime += timeMS;
-
-        if (fastest.length === 0) { //fastest starts as empty array
-            fastest.push(timeMS);
-        } else if (fastest[0] > timeMS) {
-            fastest.push(timeMS);
-            fastest.shift();
-            fastestPos = [i];
-        }
-    };
-    
-    const aveMS = totTime / resultInfo.length; //converting fastest in ms to useable string
-    const aveMS2 = new Date(aveMS);
-    const aveMS3 = aveMS2.toString();
-    const aveTime = aveMS3.slice(19, 24);
-
-    try{
         if(req.userFound) {
+            console.log("found")
+
+
+            //stat calculation
+            const quizzes = resultInfo.length;
+            let totScores = 0;
+            let times = [];
+            for(let i = 0; i < resultInfo.length; i++) {
+                totScores += resultInfo[i].score; 
+                times.push(resultInfo[i].time); //need to convert from str
+            };
+            const aveScore =  totScores/quizzes;
+
+            //convert times from string
+            let newArr = [];
+            let fastest = [];
+            let fastestPos = 0;
+            let totTime = 0;
+
+        //Probably need to build in if takes 10 mins or longer
+            for(let i = 0; i < times.length; i++) {
+                let hms = "01:0" + times[i]; //gives hours:minutes:seconds +1hour otherwise it won't work
+                let fullTime = new Date("1970-01-01T" + hms); //gives full date and time including date of 1/1/70 to allow you to extract time as milliseconds
+
+                timeMS = fullTime.getTime(); //extracts time in milliseconds
+                newArr.push(timeMS); //pushes ms to an array
+                totTime += timeMS;
+
+                if (fastest.length === 0) { //fastest starts as empty array
+                    fastest.push(timeMS);
+                } else if (fastest[0] > timeMS) {
+                    fastest.push(timeMS);
+                    fastest.shift();
+                    fastestPos = [i];
+                }
+            };
+            
+            const aveMS = totTime / resultInfo.length; //converting fastest in ms to useable string
+            const aveMS2 = new Date(aveMS);
+            const aveMS3 = aveMS2.toString();
+            const aveTime = aveMS3.slice(19, 24);
+
             res.json({
                 users:
                     {
@@ -221,15 +223,35 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
                 }
             );
         } else {
+            console.log("not found")
             res.json({ //sending message to front-end
                 message: "user not found"
             });
         }
     } catch(error) {
-        res.json({ //sending message to front-end
-            message: "login not found"
-        });
-    };    
+        res.json({
+            users:
+                {
+                    name: req.userFound.name,
+                    email: req.userFound.email,
+                },
+            results:
+                {
+                    totalQuiz: 0,
+                    totalScore: 0,
+                    AvScore: 0,
+                    fastTime: 0,
+                    avTime: 0,
+                    score: 0,
+                    time: 0,
+                    category: 0,
+                    difficulty: 0
+                }
+            }
+        );
+    }
+
+    
 });
 
 //Pull data for League Component
