@@ -182,7 +182,9 @@ const Quiz = (props) => {
 
                   console.log("in response code 4 else if ");
                   updateSessionToken(sessionToken)
-                  setTokenChanged(!tokenChanged)
+                  // setTokenChanged(!tokenChanged)  - this causes a loop
+                  // getSessionToken() - this causes a loop
+
                 
                 } 
 
@@ -325,7 +327,7 @@ const Quiz = (props) => {
       getCategoryName(category);
       fetchQuestions();
 
-    }, [sessionToken, tokenChanged])
+    }, [sessionToken, category])
 
       console.log(sessionToken)
       if (noResults) {
