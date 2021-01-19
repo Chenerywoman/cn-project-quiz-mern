@@ -353,7 +353,7 @@ const Quiz = (props) => {
   // }, [sessionToken, tokenChanged])  causes a loop because session token not updating?
 
       console.log(sessionToken)
-      console.log(questions)
+      
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
