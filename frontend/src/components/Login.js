@@ -33,7 +33,7 @@ const Login = () => {
         setBackendResponse(response.data.message);
         console.log(response.data.message);
 
-        if(response.data.message === "Login Successful") {
+        if(response.data.message === "Login Successful" || response.data.message === "Already logged in") {
             history.push('/profile');
         };
 
