@@ -45,12 +45,12 @@ const Quiz = (props) => {
       setSessionToken(sessionTokenResponse.data.token);
     };
   
-    const updateSessionToken = async (token) => {
+    const updateSessionToken = async () => {
       console.log('in update session token')
 
       try {
 
-        await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${token}`);
+        await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${sessionToken}`);
 
       } catch (error){
           
@@ -145,59 +145,20 @@ const Quiz = (props) => {
         setCategoryName(categoryName);
     }    
 
-    const fetchQuestions = async () => {
-          console.log('in fetch questions')
-          console.log(sessionToken)
+    const fetchQuestions  = async () => {
+      console.log('in fetch questions')
 
-          if (sessionToken) {
+        try {
 
-            try {
+          const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+          return response; 
 
-                const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+        } catch (error) {
+          console.log(error)
+          setNoResults(true);
+        }
 
-
-                if (response.data && response.data.response_code === 0) {
-
-                    let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
-
-                    setQuestions(questionsAndScrambledAnswers);
-                    getCategoryName(category);
-
-                } else if (response.data && response.data.response_code === 1) {
-
-                    console.log("in response code 1 if ");
-                    setNoResults(true);
-
-                } else if (response.data && response.data.response_code === 2) {
-
-                    console.log("in response code 2 else if");
-                    setNoResults(true);
-
-                } else if (response.data && response.data.response_code === 3) {
-
-                    console.log("in response code 3 else if ");
-                    getSessionToken();
-
-                } else if (response.data && response.data.response_code === 4) {
-
-                  console.log("in response code 4 else if ");
-                  updateSessionToken(sessionToken)
-                  // setTokenChanged(!tokenChanged)  - this causes a loop
-                  // getSessionToken() - this causes a loop
-
-                
-                } 
-
-            } catch (error) {
-              console.log(error)
-              setNoResults(true);
-            }
-
-          } else {
-            getSessionToken();
-          }
-      
-  } 
+    }
 
   const decodeText = (encodedText) => {
   
@@ -260,6 +221,50 @@ const Quiz = (props) => {
       },
       []
     )
+
+    const getAndPrepareQuiz = async () => {
+
+      if (sessionToken) {
+
+          const response = await fetchQuestions();
+        
+          if (response.data && response.data.response_code === 0) {
+
+              let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
+
+              setQuestions(questionsAndScrambledAnswers);
+              getCategoryName(category);
+
+          } else if (response.data && response.data.response_code === 1) {
+
+              console.log("in response code 1 if ");
+              setNoResults(true);
+
+          } else if (response.data && response.data.response_code === 2) {
+
+              console.log("in response code 2 else if");
+              setNoResults(true);
+
+          } else if (response.data && response.data.response_code === 3) {
+
+              console.log("in response code 3 else if ");
+              getSessionToken();
+
+          } else if (response.data && response.data.response_code === 4) {
+
+            console.log("in response code 4 else if ");
+            await updateSessionToken()
+            // setTokenChanged(!tokenChanged)  //- this causes a loop
+            // getSessionToken() - this causes a loop
+          } 
+
+         
+
+      } else {
+            getSessionToken();
+        }
+      
+  } 
 
     const onRadioChange = (answerInd, questionInd, event) => {
 
@@ -324,12 +329,13 @@ const Quiz = (props) => {
 
     useEffect(() => {
 
-      getCategoryName(category);
-      fetchQuestions();
+      getAndPrepareQuiz()
 
-    }, [sessionToken, category])
+    }, [sessionToken])
+  // }, [sessionToken, tokenChanged])  causes a loop because session token not updating?
 
       console.log(sessionToken)
+      console.log(questions)
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
