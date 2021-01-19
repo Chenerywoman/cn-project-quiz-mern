@@ -152,6 +152,8 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
     let fastest = [];
     let fastestPos = 0;
     let totTime = 0;
+
+    //Probably need to build in if takes 10 mins or longer
     for(let i = 0; i < times.length; i++) {
         let hms = "01:0" + times[i]; //gives hours:minutes:seconds +1hour otherwise it won't work
         let fullTime = new Date("1970-01-01T" + hms); //gives full date and time including date of 1/1/70 to allow you to extract time as milliseconds
@@ -214,9 +216,18 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
 });
 
 //Pull data for League Component
-app.get('/league', (req, res) => {
-    //const userInfo = User.find(); //DB pull for user info
-    //const resultsInfo = Results.find(); //DB pull for results info
+app.get('/league', async (req, res) => {
+    const resultInfo = await Result.find(); //DB pull for results info
+    const sortedResults = [];
+
+    resultInfo.sort(function (result1, result2) {
+        if (result1.score > result2.score) return -1;
+        if (result2.score > result1.score) return 1;
+
+    });
+    console.log(resultInfo);
+
+
 
     res.json({
         users:
