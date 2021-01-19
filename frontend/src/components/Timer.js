@@ -1,36 +1,47 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
-class Timer extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = {date: new Date()};
-    }
+const Timer = ({getTimeTaken}) => {
   
-    componentDidMount() {
-      this.timerID = setInterval(
-        () => this.tick(),
-        1000
-      );
-    }
+  const [seconds, setSeconds] = useState('00');
+  const [minutes, setMinutes] = useState('00');
+  const [counter, setCounter] = useState(0);
   
-    componentWillUnmount() {
-      clearInterval(this.timerID);
-    }
-  
-    tick() {
-      this.setState({
-        date: new Date()
-      });
-    }
-  
-    render() {
-      return (
-        <div>
-          <h1>Hello, world!</h1>
-          <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
-        </div>
-      );
-    }
-  }
+  useEffect(() => {
 
-  export default Timer;
+
+    let interval = setInterval(() => {
+
+      const secondCounter = counter % 60;
+      const minuteCounter = Math.floor(counter / 60);
+
+      const computedSeconds = String(secondCounter).length === 1 ? `0${secondCounter}` : secondCounter;
+      const computedMinutes = String(minuteCounter).length === 1 ? `0${minuteCounter}` : minuteCounter;
+      
+      setSeconds(computedSeconds);
+      setMinutes(computedMinutes);
+      setCounter(counter => counter + 1);
+
+      }, 1000)
+
+    return () => {
+      
+      getTimeTaken(`${minutes}:${seconds}`)
+      clearInterval(interval)
+    
+    }
+  
+  }, [counter, getTimeTaken, minutes, seconds])
+
+  return (
+    <>
+      <div>
+      <span className="minute">{minutes}</span>
+      <span>:</span>
+      <span className="second">{seconds}</span>
+      </div>
+    </>
+  )
+}
+
+export default Timer
+

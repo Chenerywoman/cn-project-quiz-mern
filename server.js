@@ -112,23 +112,43 @@ app.post('/login', async (req, res) => {
 //quiz scores
 app.post('/quiz', auth.isLoggedIn, async (req, res) => {
     console.log("reaching backend"); //checking data is received on backend
-    // console.log(req.body.score);
-    // console.log(req.body.time);
-    // console.log(req.body.category);
-    // console.log(req.body.difficulty);
-    // console.log(req.userFound._id);
+    console.log(req.body.score);
+    console.log(req.body.time);
+    console.log(req.body.category);
+    console.log(req.body.difficulty);
+    console.log(req.userFound._id);
+    console.log('req.userFound')
+    console.log(req.userFound)
+    
+    try {
 
-    // await Result.create({
-    //     score: req.body.score,
-    //     time: req.body.time,
-    //     category: req.body.category,
-    //     difficulty: req.body.difficulty,
-    //     user: req.userFound._id, //add later after User db created
-    // })
+        if (req.userFound) {
 
-    res.json({ //sending message to front-end
-        message: "Results logged"
-    });
+            await Result.create({
+                score: req.body.score,
+                time: req.body.time,
+                category: req.body.category,
+                difficulty: req.body.difficulty,
+                user: req.userFound._id
+            })
+        
+            res.json({ //sending message to front-end
+                message: "Results logged"
+            });
+    
+        } else {
+    
+            res.json({
+                message: "not logged-in"
+            });
+    
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+   
+
 });
 
 //Pull data for Profile Component
