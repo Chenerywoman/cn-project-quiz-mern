@@ -67,7 +67,7 @@ app.post('/register', async (req, res) => {
 //Logging in
 app.post('/login', async (req, res) => {
     //test
-    console.log("reaching register on backend");
+    console.log("reaching login on backend");
     console.log(req.body.userEmail);
     console.log(req.body.userPassword);
 
