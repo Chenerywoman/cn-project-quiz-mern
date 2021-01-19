@@ -19,6 +19,7 @@ const Quiz = (props) => {
     const [timeTaken, setTimeTaken] = useState(0);
     const [sessionToken, setSessionToken] = useState("");
     const [tokenChanged, setTokenChanged] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const getTimeTaken = useCallback((time) => {
 
@@ -45,12 +46,12 @@ const Quiz = (props) => {
       setSessionToken(sessionTokenResponse.data.token);
     };
   
-    const updateSessionToken = async (token) => {
+    const updateSessionToken = async () => {
       console.log('in update session token')
 
       try {
 
-        await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${token}`);
+        await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${sessionToken}`);
 
       } catch (error){
           
@@ -145,59 +146,20 @@ const Quiz = (props) => {
         setCategoryName(categoryName);
     }    
 
-    const fetchQuestions = async () => {
-          console.log('in fetch questions')
-          console.log(sessionToken)
+    const fetchQuestions  = async () => {
+      console.log('in fetch questions')
 
-          if (sessionToken) {
+        try {
 
-            try {
+          const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+          return response; 
 
-                const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+        } catch (error) {
+          console.log(error)
+          setNoResults(true);
+        }
 
-
-                if (response.data && response.data.response_code === 0) {
-
-                    let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
-
-                    setQuestions(questionsAndScrambledAnswers);
-                    getCategoryName(category);
-
-                } else if (response.data && response.data.response_code === 1) {
-
-                    console.log("in response code 1 if ");
-                    setNoResults(true);
-
-                } else if (response.data && response.data.response_code === 2) {
-
-                    console.log("in response code 2 else if");
-                    setNoResults(true);
-
-                } else if (response.data && response.data.response_code === 3) {
-
-                    console.log("in response code 3 else if ");
-                    getSessionToken();
-
-                } else if (response.data && response.data.response_code === 4) {
-
-                  console.log("in response code 4 else if ");
-                  updateSessionToken(sessionToken)
-                  // setTokenChanged(!tokenChanged)  - this causes a loop
-                  // getSessionToken() - this causes a loop
-
-                
-                } 
-
-            } catch (error) {
-              console.log(error)
-              setNoResults(true);
-            }
-
-          } else {
-            getSessionToken();
-          }
-      
-  } 
+    }
 
   const decodeText = (encodedText) => {
   
@@ -261,6 +223,80 @@ const Quiz = (props) => {
       []
     )
 
+         //inside useEffect
+  //const questions = fetchQuestions() (in any case)
+      //Happy path
+      // store questions in state
+      //Sad path
+      // response === 3
+      // getSessionToken()
+      // response === 4
+      // refreshToken()
+      //const questions = fetchQuestions()      
+      //store questions in state
+//[sessionToken]
+
+    const getAndPrepareQuiz = async () => {
+
+      setIsLoading(true)
+
+      if (sessionToken) {
+
+          const response = await fetchQuestions();
+        
+          if (response.data && response.data.response_code === 0) {
+
+              let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
+              setQuestions(questionsAndScrambledAnswers);
+              getCategoryName(category);
+
+              setIsLoading(false)
+
+          } else if (response.data && response.data.response_code === 1) {
+
+              console.log("in response code 1 if ");
+              setNoResults(true);
+
+          } else if (response.data && response.data.response_code === 2) {
+
+              console.log("in response code 2 else if");
+              setNoResults(true);
+
+          } else if (response.data && response.data.response_code === 3) {
+
+              console.log("in response code 3 else if ");
+              getSessionToken();
+
+          } else if (response.data && response.data.response_code === 4) {
+
+              console.log("in response code 4 else if ");
+              await updateSessionToken()
+
+              const secondResponse = await fetchQuestions();
+              console.log(secondResponse)
+
+              if (secondResponse.data.response_code === 4) {
+                setNoResults(true);
+              } else {
+
+                let questionsAndScrambledAnswers = scrambledAnswersCallBack(secondResponse.data.results);
+                setQuestions(questionsAndScrambledAnswers);
+                getCategoryName(category);
+                setTokenChanged(!tokenChanged)  //- this causes a loop as update token not working?
+                setIsLoading(false)
+
+              }
+
+          } 
+
+         
+
+      } else {
+            getSessionToken();
+        }
+      
+  } 
+
     const onRadioChange = (answerInd, questionInd, event) => {
 
       // update answers with true or false
@@ -309,36 +345,27 @@ const Quiz = (props) => {
 
   }
 
-     //inside useEffect
-  //const questions = fetchQuestions() (in any case)
-      //Happy path
-      // store questions in state
-      //Sad path
-      // response === 3
-      // getSessionToken()
-      // response === 4
-      // refreshToken()
-      //const questions = fetchQuestions()      
-      //store questions in state
-//[sessionToken]
-
     useEffect(() => {
 
-      getCategoryName(category);
-      fetchQuestions();
+      getAndPrepareQuiz()
 
-    }, [sessionToken, category])
+    }, [sessionToken])
+  // }, [sessionToken, tokenChanged])  causes a loop because session token not updating?
 
       console.log(sessionToken)
+      
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
         return (
           <div>
             <h1>Quiz Page</h1>
+            {isLoading ? <p>...loading</p> : 
+            <div>
             <h2>Category:{categoryName} </h2>
             <h2>Difficulty:{difficulty}</h2>  
-           
+            </div>
+            }
               Timer:<Timer getTimeTaken={getTimeTaken}/>
                 <form onSubmit={formHandler}>
                     {questions.map((question, questionInd) => {
