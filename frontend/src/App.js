@@ -1,6 +1,5 @@
 import React, {useState, useCallback} from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import axios from 'axios';
 import Nav from './components/Nav';
 import Home from './components/Home';
 import Register from './components/Register';
