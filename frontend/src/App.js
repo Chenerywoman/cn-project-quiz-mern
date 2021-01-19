@@ -14,21 +14,9 @@ import Timer from './components/Timer';
 import './App.css';
 
 function App() {
+  
   const [category, setCategory] = useState("9");
   const [difficulty, setDifficulty] = useState("easy");
-  const [sessionToken, setSessionToken] = useState("");
-
-  const getSessionToken = async () => {  
-    console.log('in get session token') 
-    const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
-    setSessionToken(sessionTokenResponse.data.token);
-  };
-
-  const updateSessionToken = async (token) => {
-    console.log('in update session token')
-    const updatedSessionTokenResponse = await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${token}`);
-    setSessionToken(updatedSessionTokenResponse.data.token)
-  }
 
   const updateCategory = useCallback((event) => {
     setCategory(event);
@@ -54,9 +42,6 @@ function App() {
           <Quiz 
             category={category}
             difficulty={difficulty}
-            sessionToken={sessionToken}
-            getSessionToken={getSessionToken}
-            updateSessionToken={updateSessionToken}
             />}
           />
         <Route exact path="/profile" component={Profile} />
