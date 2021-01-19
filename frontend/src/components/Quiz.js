@@ -19,6 +19,7 @@ const Quiz = (props) => {
     const [timeTaken, setTimeTaken] = useState(0);
     const [sessionToken, setSessionToken] = useState("");
     const [tokenChanged, setTokenChanged] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const getTimeTaken = useCallback((time) => {
 
@@ -222,7 +223,22 @@ const Quiz = (props) => {
       []
     )
 
+         //inside useEffect
+  //const questions = fetchQuestions() (in any case)
+      //Happy path
+      // store questions in state
+      //Sad path
+      // response === 3
+      // getSessionToken()
+      // response === 4
+      // refreshToken()
+      //const questions = fetchQuestions()      
+      //store questions in state
+//[sessionToken]
+
     const getAndPrepareQuiz = async () => {
+
+      setIsLoading(true)
 
       if (sessionToken) {
 
@@ -231,9 +247,10 @@ const Quiz = (props) => {
           if (response.data && response.data.response_code === 0) {
 
               let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
-
               setQuestions(questionsAndScrambledAnswers);
               getCategoryName(category);
+
+              setIsLoading(false)
 
           } else if (response.data && response.data.response_code === 1) {
 
@@ -252,10 +269,24 @@ const Quiz = (props) => {
 
           } else if (response.data && response.data.response_code === 4) {
 
-            console.log("in response code 4 else if ");
-            await updateSessionToken()
-            // setTokenChanged(!tokenChanged)  //- this causes a loop
-            // getSessionToken() - this causes a loop
+              console.log("in response code 4 else if ");
+              await updateSessionToken()
+
+              const secondResponse = await fetchQuestions();
+              console.log(secondResponse)
+
+              if (secondResponse.data.response_code === 4) {
+                setNoResults(true);
+              } else {
+
+                let questionsAndScrambledAnswers = scrambledAnswersCallBack(secondResponse.data.results);
+                setQuestions(questionsAndScrambledAnswers);
+                getCategoryName(category);
+                setTokenChanged(!tokenChanged)  //- this causes a loop as update token not working?
+                setIsLoading(false)
+
+              }
+
           } 
 
          
@@ -314,19 +345,6 @@ const Quiz = (props) => {
 
   }
 
-     //inside useEffect
-  //const questions = fetchQuestions() (in any case)
-      //Happy path
-      // store questions in state
-      //Sad path
-      // response === 3
-      // getSessionToken()
-      // response === 4
-      // refreshToken()
-      //const questions = fetchQuestions()      
-      //store questions in state
-//[sessionToken]
-
     useEffect(() => {
 
       getAndPrepareQuiz()
@@ -342,9 +360,12 @@ const Quiz = (props) => {
         return (
           <div>
             <h1>Quiz Page</h1>
+            {isLoading ? <p>...loading</p> : 
+            <div>
             <h2>Category:{categoryName} </h2>
             <h2>Difficulty:{difficulty}</h2>  
-           
+            </div>
+            }
               Timer:<Timer getTimeTaken={getTimeTaken}/>
                 <form onSubmit={formHandler}>
                     {questions.map((question, questionInd) => {
