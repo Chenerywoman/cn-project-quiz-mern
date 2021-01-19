@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
@@ -6,14 +6,16 @@ import axios from 'axios';
 const Profile = () => {
     const [user, setUser] = useState({});
     const [result, setResult] = useState({});
-    const [backendResponse, setBackendResponse] = useState("");
+  
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const history = useHistory();
 
-    const fetchData = useCallback (async () => {
+    const fetchData = async () => {
         
         const response = await axios.get('/profile');
-        setBackendResponse(response.data.message);
         console.log(response.data.message);
 
         if(response.data.message === "user not found" || response.data.message === "login not found" ) {
@@ -22,15 +24,8 @@ const Profile = () => {
             setUser(response.data.users);
             setResult(response.data.results);
         };
-        
+    };
 
-    },[history]);
-
-    useEffect(() => {
-        fetchData()
-    }, [fetchData]);
-
-    console.log(backendResponse)
     return (
         <div>
             <h1>Profile Page</h1>
@@ -64,16 +59,20 @@ const Profile = () => {
                     <h5>Average Time: </h5>
                     <p>{result.avTime}</p>
 
-                    <h5>Ranking: </h5>
-                    <p>{result.position}</p>
+                    {/* <h5>Ranking: </h5>
+                    <p>{result.position}</p> */}
                 </div>    
             </div>
 
             <div id="right-side" >
-                <div id="leaderboard-info">{/*Require if statement*/}
-                    <h2>Congratulations!</h2>
-                    <h5>You are {result.topPosition} on the Leaderboard</h5>
-                </div>  
+                {//<div id="leaderboard-info">{/*Require if statement*/}
+                }
+                    {//<h2>Congratulations!</h2>
+                    }
+                    {//<h5>You are {result.topPosition} on the Leaderboard</h5>
+                    }
+                {//</div>}  
+                }
 
                 <div id="last-quiz-info">
                     <h3>The Results of Your Last Quiz are:</h3>
@@ -91,6 +90,7 @@ const Profile = () => {
                     <p>{result.difficulty}</p>
                 </div>   
             </div>
+            
 
         </div>
     )
