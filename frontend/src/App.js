@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import axios from 'axios';
 import Nav from './components/Nav';
@@ -18,7 +18,8 @@ function App() {
   const [difficulty, setDifficulty] = useState("easy");
   const [sessionToken, setSessionToken] = useState("");
 
-  const getSessionToken = async () => {   
+  const getSessionToken = async () => {  
+    console.log('in get session token') 
     const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
     setSessionToken(sessionTokenResponse.data.token);
   };
@@ -29,13 +30,13 @@ function App() {
     setSessionToken(updatedSessionTokenResponse.data.token)
   }
 
-  const updateCategory = (event) => {
+  const updateCategory = useCallback((event) => {
     setCategory(event);
-  };
+  }, []);
 
-  const updateDifficulty = (event) => {
+  const updateDifficulty = useCallback((event) => {
     setDifficulty(event);
-  };
+  },[]);
 
   return (
     <BrowserRouter>

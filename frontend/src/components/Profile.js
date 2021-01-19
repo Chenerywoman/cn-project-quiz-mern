@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
@@ -6,14 +6,14 @@ import axios from 'axios';
 const Profile = () => {
     const [user, setUser] = useState({});
     const [result, setResult] = useState({});
-
+  
     useEffect(() => {
         fetchData();
     }, []);
 
     const history = useHistory();
 
-    const fetchData = async () => {
+    const fetchData = useCallback (async () => {
         
         const response = await axios.get('/profile');
 
@@ -25,9 +25,13 @@ const Profile = () => {
         };
         
 
-    };
+    },[history]);
 
+    useEffect(() => {
+        fetchData()
+    }, [fetchData]);
 
+    console.log(backendResponse)
     return (
         <div>
             <h1>Profile Page</h1>
