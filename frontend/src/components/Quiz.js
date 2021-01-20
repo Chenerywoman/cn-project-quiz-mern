@@ -278,7 +278,7 @@ const Quiz = (props) => {
             getSessionToken();
         }
       
-  } 
+    } 
 
     const onRadioChange = (answerInd, questionInd, event) => {
 
@@ -294,11 +294,32 @@ const Quiz = (props) => {
       // update state of questions and answers
       setQuestions(questionsPlaceholder);
       setAnswers(answersPlaceholder);
-  }
+    }
 
+    const checkAllAnswered = (array) => {
+
+      const allChecked = array.reduce((acc, curr, ind, arr) => {
+
+         return curr.selected ? acc + 1 : acc;
+
+      }, 0)
+
+      return allChecked > 0 ? false : true
+
+    }
 
     const formHandler = async (event) => {
       console.log('in form handler')
+
+      // questions.forEach((elem, ind, arr) => {
+      //   console.log('in questions')
+      //   if (elem.selected === false){
+      //     console.log('not all selected')
+      //   }
+
+      // });
+
+      console.log(checkAllAnswered(questions))
      
         
       event.preventDefault();
