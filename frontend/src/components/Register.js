@@ -45,25 +45,27 @@ const Register = () => {
     };
 
     return (
-        <div>
-            <h1>Register User</h1>
+        <div class="page" >
+            <h1 id="register-head" >Register User</h1>
 
             <form onSubmit={formHandler} >
-                <label>User Name: </label>
-                <input required type="text" name="userName" onChange={(e) => setName(e.target.value)} /><br />
+                <div>
+                    <label>User Name</label> <br />
+                    <input required type="text" name="userName" onChange={(e) => setName(e.target.value)} /><br />
 
-                <label>User Email: </label>
-                <input required type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
+                    <label>User Email</label> <br />
+                    <input required type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
 
-                <label>User Password: </label>
-                <input required type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
+                    <label>User Password</label> <br />
+                    <input required type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
 
-                <label>Confirm Password: </label>
-                <input required type="password" name="confPassword" onChange={(e) => setConf(e.target.value)} /><br />
+                    <label>Confirm Password</label> <br />
+                    <input class="bottom" required type="password" name="confPassword" onChange={(e) => setConf(e.target.value)} /><br />
+                    <p class="error" >{ backendResponse }</p>
+                </div>
 
                 <button type="submit" >Register</button>
             </form>
-            { backendResponse }
         </div>
     )
 }

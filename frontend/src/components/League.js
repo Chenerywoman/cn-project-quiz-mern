@@ -26,32 +26,32 @@ const League = () => {
     console.log(topTen);
 
     return (
-        <div>
+        <div class="page" id="league" >
             <h3>League Table</h3>
-            <h1>Top 10</h1>
-            <div id="table-container" >
+            <h1 id="top10" >Top 10</h1>
+            <table id="table" >
                 <tr>
-                    <th>Position</th>
-                    <th>Score</th>
-                    <th>Time</th>
-                    <th>User</th>
-                    <th>Category</th>
-                    <th>Difficulty</th>
+                    <th class="header" >Position</th>
+                    <th class="header" >Score</th>
+                    <th class="header" >Time</th>
+                    <th class="header" >User</th>
+                    <th class="header" >Category</th>
+                    <th class="header" >Difficulty</th>
                 </tr>
                 {topTen.map((topTen) => {
                     return (
                         <tr>
-                            <td>{topTen.position}</td>
-                            <td>{topTen.score}</td>
-                            <td>{topTen.time}</td>
-                            <td>{topTen.user.name}</td>
-                            <td>{topTen.category}</td>
-                            <td>{topTen.difficulty}</td>
+                            <td class="data" id="position" >{topTen.position}</td>
+                            <td class="data" >{topTen.score}</td>
+                            <td class="data" >{topTen.time}</td>
+                            <td class="data" >{topTen.user.name}</td>
+                            <td class="data" >{topTen.category}</td>
+                            <td class="data" >{topTen.difficulty}</td>
                         </tr>
                     )
                 } )}
                 
-            </div>
+            </table>
         </div>
     )
 }
