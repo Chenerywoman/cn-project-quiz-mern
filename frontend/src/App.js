@@ -1,5 +1,6 @@
-import React, {useState, useCallback} from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import React, {useState, useCallback, useEffect} from 'react';
+import { BrowserRouter, Switch, Route, useHistory } from 'react-router-dom';
+import axios from 'axios';
 import Nav from './components/Nav';
 import Home from './components/Home';
 import Register from './components/Register';
@@ -16,6 +17,9 @@ function App() {
   
   const [category, setCategory] = useState("9");
   const [difficulty, setDifficulty] = useState("easy");
+  const [categories, setCategories] = useState([]);
+
+  const history = useHistory();
 
   const updateCategory = useCallback((event) => {
     setCategory(event);
@@ -25,6 +29,26 @@ function App() {
     setDifficulty(event);
   },[]);
 
+  const fetchCategories = async () => {
+      
+    try {
+        const categories = await axios.get('https://opentdb.com/api_category.php');
+        console.log(categories.data.trivia_categories)
+        setCategories(categories.data.trivia_categories)
+
+    } catch (error) {
+        console.log(error)
+        history.push('/error')
+    }
+
+  }
+      
+
+    useEffect(() => {
+        fetchCategories();
+    }, [])
+
+   console.log(categories) 
   return (
     <BrowserRouter>
       <Nav />
@@ -36,6 +60,7 @@ function App() {
           <Selection 
             updateCategory={updateCategory} 
             updateDifficulty={updateDifficulty}
+            categories={categories}
             {...props}/>} />
         <Route exact path="/quiz" render={() => 
           <Quiz 
