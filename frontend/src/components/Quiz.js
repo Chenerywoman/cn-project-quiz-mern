@@ -26,20 +26,6 @@ const Quiz = (props) => {
       setTimeTaken(time);
     }, [])
 
-    //inside useEffect
-  //const questions = fetchQuestions() (in any case)
-      //Happy path
-      // store questions in state
-      //Sad path
-      // response === 3
-      // getSessionToken()
-      // response === 4
-      // refreshToken()
-      //const questions = fetchQuestions()      
-      //store questions in state
-//[sessionToken]
-
-
     const getSessionToken = async () => {  
       console.log('in get session token') 
       const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
@@ -178,21 +164,18 @@ const Quiz = (props) => {
 
           let answers = [{
             answer: decodeText(curr.correct_answer),
-            correct: true,
-            selected: false
+            correct: true
           }, {
             answer: decodeText(curr.incorrect_answers[0]),
-            correct: false,
-            selected: false
+            correct: false
           }, {
             answer: decodeText(curr.incorrect_answers[1]),
-            correct: false,
-            selected: false
+            correct: false
           }, {
             answer: decodeText(curr.incorrect_answers[2]),
-            correct: false,
-            selected: false
+            correct: false
           }];
+
           let mixedAnswers = [];
 
           let num = 4;
@@ -210,6 +193,7 @@ const Quiz = (props) => {
 
           acc.push({
             number: `Question${ind}`,
+            selected: false,
             question: decodeText(curr.question),
             answers: mixedAnswers
           });
@@ -288,8 +272,7 @@ const Quiz = (props) => {
               }
 
           } 
-
-         
+  
 
       } else {
             getSessionToken();
@@ -304,7 +287,13 @@ const Quiz = (props) => {
       const answersPlaceholder = [...answers]
       answersPlaceholder.splice(questionInd, 1, correctOrIncorrect);
 
-      setAnswers(answersPlaceholder)
+      // update that question selected
+      const questionsPlaceholder = [...questions];
+      questionsPlaceholder[questionInd].selected = true;
+
+      // update state of questions and answers
+      setQuestions(questionsPlaceholder);
+      setAnswers(answersPlaceholder);
   }
 
 
@@ -354,7 +343,8 @@ const Quiz = (props) => {
     }, [sessionToken])
   // }, [sessionToken, tokenChanged])  causes a loop because session token not updating?
 
-      console.log(sessionToken)
+      // console.log(sessionToken)
+      console.log(questions)
       
       if (noResults) {
         return <Redirect to = "/error" / >
