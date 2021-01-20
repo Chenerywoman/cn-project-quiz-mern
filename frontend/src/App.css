@@ -254,6 +254,9 @@ input, select {
   margin-left: 2rem;
   margin-top: 2rem;
   width: 60vw;
+  background-color: #B7CECE;
+  padding: 1rem 1rem 1rem 1rem;
+  border: 2px solid #6E7E85;
 }
 
 #question {
@@ -279,4 +282,16 @@ input, select {
 #time-container Label{
   font-size: 2rem;
   font-family: 'Russo One', sans-serif;
+}
+
+@media screen and (max-width: 500px) {
+  nav {
+    justify-content: center;
+  }
+  nav a {
+    margin-right: 0rem;
+  }
+  h1 {
+    font-size: 2rem;
+  }
 }
