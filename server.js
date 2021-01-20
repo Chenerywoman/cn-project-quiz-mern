@@ -63,50 +63,53 @@ app.post('/register', async (req, res) => {
     }      
 });
 
-//Logging in
-app.post('/login', auth.isLoggedIn, async (req, res) => {
+//login page
+app.get('/login', auth.isLoggedIn, async (req, res) => {
     if(req.userFound) {
         res.json({
             message: "Already logged in"
         });
     } else {
         console.log("reaching register on backend");
+    };
+});
 
-        try{
-            const user = await User.findOne({email: req.body.userEmail}); // finds full object
+//Logging in
+app.post('/login', auth.isLoggedIn, async (req, res) => {
+    try{
+        const user = await User.findOne({email: req.body.userEmail}); // finds full object
 
-            const isMatch = await bcrypt.compare(req.body.userPassword, user.password ); //compares the two passwords and returns a boolean
+        const isMatch = await bcrypt.compare(req.body.userPassword, user.password ); //compares the two passwords and returns a boolean
 
-        
-            if (isMatch) {
-                const token = jwt.sign( {id: user._id}, process.env.JWT_SECRET, { //jwt is jsonwebtoken which creates the unique token for the user which is then stored as a cookie in the browser
-                    expiresIn: process.env.JWT_EXPIRES_IN
-                }); 
-                
-                console.log(token);
+    
+        if (isMatch) {
+            const token = jwt.sign( {id: user._id}, process.env.JWT_SECRET, { //jwt is jsonwebtoken which creates the unique token for the user which is then stored as a cookie in the browser
+                expiresIn: process.env.JWT_EXPIRES_IN
+            }); 
+            
+            console.log(token);
 
-                const cookieOptions = {
-                    expires: new Date(
-                        Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000
-                    ), 
-                    httpOnly: true
-                }
-
-                res.cookie('jwt', token, cookieOptions); //creating the cookie on your browser(name of cookie, value of cookie, how long is cookie valid)
-
-                res.json({ //sending message to front-end
-                    message: "Login Successful"
-                });
-            } else {
-                res.json({ //sending message to front-end
-                    message: "Your login details are incorrect"
-                });
+            const cookieOptions = {
+                expires: new Date(
+                    Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+                ), 
+                httpOnly: true
             }
-        } catch(error) {
+
+            res.cookie('jwt', token, cookieOptions); //creating the cookie on your browser(name of cookie, value of cookie, how long is cookie valid)
+
             res.json({ //sending message to front-end
-                message: "This user does not exist"
+                message: "Login Successful"
+            });
+        } else {
+            res.json({ //sending message to front-end
+                message: "Your login details are incorrect"
             });
         }
+    } catch(error) {
+        res.json({ //sending message to front-end
+            message: "This user does not exist"
+        });
     };
 });
 

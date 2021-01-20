@@ -357,37 +357,42 @@ const Quiz = (props) => {
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
-        return (
-          <div>
-            <h1>Quiz Page</h1>
-            {isLoading ? <p>...loading</p> : 
-            <div>
-            <h2>Category:{categoryName} </h2>
-            <h2>Difficulty:{difficulty}</h2>  
-            </div>
-            }
-              Timer:<Timer getTimeTaken={getTimeTaken}/>
-                <form onSubmit={formHandler}>
-                    {questions.map((question, questionInd) => {
-                        return (
-                                <div key={questionInd} >
-                                    <p> {question.question} </p>
-                                    {question.answers.map((answer, answerInd) => {
-                                        return(
-                                            <div key={answerInd}>
-                                                <label htmlFor={question.number}>{answer.answer}</label>
-                                                <input type="radio" name={question.number} value={answer.correct} onChange={(event) => onRadioChange(answerInd, questionInd, event)}/>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            )
-                        })
-                    }
-                    <input type="submit" value="Submit" />
-                </form>            
-            </div>
-        )
+
+  return (
+    <div class="page" id="quiz" >
+      <h1 id="quiz-head" >Quiz Page</h1>
+      {isLoading ? <p>...loading</p> : 
+      <div id="quiz-info" >
+        <h2>Category: {categoryName} </h2>
+        <h2>Difficulty: {difficulty}</h2>  
+      </div>
+      }
+      <div id="time-container" >
+        <label>Timer:</label>
+        <h4><Timer getTimeTaken={getTimeTaken}/></h4>
+      </div>
+      <form onSubmit={formHandler}>
+        <div id="question-box">
+          {questions.map((question, questionInd) => {
+            return (
+              <div id="question" key={questionInd} >
+                <h4> {question.question} </h4>
+                {question.answers.map((answer, answerInd) => {
+                  return(
+                    <div id="answers" key={answerInd}>
+                      <label htmlFor={question.number}>{answer.answer}</label>
+                      <input type="radio" name={question.number} value={answer.correct} onChange={(event) => onRadioChange(answerInd, questionInd, event)}/>
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })}
+        </div>
+        <input id="quiz-submit" type="submit" value="Submit" />
+      </form>            
+    </div>
+  )
 }
 
 export default Quiz

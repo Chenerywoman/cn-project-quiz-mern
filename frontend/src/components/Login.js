@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
@@ -6,6 +6,19 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [backendResponse, setBackendResponse] = useState("");
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        
+        const response = await axios.get('/login');
+
+        if(response.data.message === "Already logged in") {
+            history.push('/profile');
+        };
+    };
 
     const history = useHistory();
 
@@ -40,18 +53,20 @@ const Login = () => {
     };
 
     return (
-        <div>
+        <div class="page" id="login" >
 
-            <h1>Login</h1>
+            <h1 id="login-head" >Login</h1>
 
             <form onSubmit={formHandler} >
-                <label>User Email</label> <br />
-                <input required type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
+                <div>
+                    <label>User Email</label> <br />
+                    <input required type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
 
-                <label>User Password</label> <br />
-                <input required type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
+                    <label>User Password</label> <br />
+                    <input required type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
+                </div>
 
-                <button type="submit" >Login</button>
+                <button id="login-submit" type="submit" >Login</button>
 
             </form>
             { backendResponse }
