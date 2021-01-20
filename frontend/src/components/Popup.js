@@ -5,7 +5,7 @@ const Popup = ({closePopup}) => {
         <div>
             <div>
                 <h1>Please complete all questions</h1>
-                <button onClick={closePopup}>close</button>
+                <button onClick={closePopup}>x</button>
             </div>
         </div>
     )
