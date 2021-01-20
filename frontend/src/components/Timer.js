@@ -34,11 +34,9 @@ const Timer = ({getTimeTaken}) => {
 
   return (
     <>
-      <div>
       <span className="minute">{minutes}</span>
       <span>:</span>
       <span className="second">{seconds}</span>
-      </div>
     </>
   )
 }

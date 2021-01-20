@@ -2,6 +2,7 @@ import React, {useEffect, useState, useCallback} from 'react';
 import axios from 'axios';
 import {useHistory, Redirect} from 'react-router-dom';
 import Timer from './Timer';
+import Popup from './Popup';
 
 const Quiz = (props) => {
 
@@ -18,6 +19,7 @@ const Quiz = (props) => {
     const [noResults, setNoResults] = useState(false);
     const [timeTaken, setTimeTaken] = useState(0);
     const [sessionToken, setSessionToken] = useState("");
+    const [showPopup, setShowPopup] = useState(false);
     const [tokenChanged, setTokenChanged] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -25,20 +27,6 @@ const Quiz = (props) => {
 
       setTimeTaken(time);
     }, [])
-
-    //inside useEffect
-  //const questions = fetchQuestions() (in any case)
-      //Happy path
-      // store questions in state
-      //Sad path
-      // response === 3
-      // getSessionToken()
-      // response === 4
-      // refreshToken()
-      //const questions = fetchQuestions()      
-      //store questions in state
-//[sessionToken]
-
 
     const getSessionToken = async () => {  
       console.log('in get session token') 
@@ -178,21 +166,18 @@ const Quiz = (props) => {
 
           let answers = [{
             answer: decodeText(curr.correct_answer),
-            correct: true,
-            selected: false
+            correct: true
           }, {
             answer: decodeText(curr.incorrect_answers[0]),
-            correct: false,
-            selected: false
+            correct: false
           }, {
             answer: decodeText(curr.incorrect_answers[1]),
-            correct: false,
-            selected: false
+            correct: false
           }, {
             answer: decodeText(curr.incorrect_answers[2]),
-            correct: false,
-            selected: false
+            correct: false
           }];
+
           let mixedAnswers = [];
 
           let num = 4;
@@ -210,6 +195,7 @@ const Quiz = (props) => {
 
           acc.push({
             number: `Question${ind}`,
+            selected: false,
             question: decodeText(curr.question),
             answers: mixedAnswers
           });
@@ -288,14 +274,13 @@ const Quiz = (props) => {
               }
 
           } 
-
-         
+  
 
       } else {
             getSessionToken();
         }
       
-  } 
+    } 
 
     const onRadioChange = (answerInd, questionInd, event) => {
 
@@ -304,45 +289,76 @@ const Quiz = (props) => {
       const answersPlaceholder = [...answers]
       answersPlaceholder.splice(questionInd, 1, correctOrIncorrect);
 
-      setAnswers(answersPlaceholder)
-  }
+      // update that question selected
+      const questionsPlaceholder = [...questions];
+      questionsPlaceholder[questionInd].selected = true;
 
+      // update state of questions and answers
+      setQuestions(questionsPlaceholder);
+      setAnswers(answersPlaceholder);
+    }
+
+    const checkAllAnswered = (array) => {
+
+      const allChecked = array.reduce((acc, curr, ind, arr) => {
+
+         return curr.selected ? acc + 1 : acc;
+
+      }, 0)
+
+      return allChecked < 10 ? false : true
+
+    }
+
+      const togglePopup = () => {
+        setShowPopup(!showPopup)
+      }
 
     const formHandler = async (event) => {
-        
+      console.log('in form handler')
+
       event.preventDefault();
 
-      const score = answers.reduce((acc, curr, ind, arr) => {
+      const allAnswered = checkAllAnswered(questions);
+      console.log(allAnswered)
 
-          return curr ? acc + 1 : acc;
+      if (!allAnswered) {
 
-      }, 0);
+          if (!showPopup)  setShowPopup(true);
+      
+        } else {
 
-      const body = {
-          score: score,
-          time: timeTaken,
-          category: categoryName,
-          difficulty: difficulty
-      }
+        const score = answers.reduce((acc, curr, ind, arr) => {
 
-      const config = {
-          headers: {
-              'Content-Type': 'application/json'
-          }
-      }
+            return curr ? acc + 1 : acc;
 
-      const response = await axios.post('/quiz', body, config);
-      console.log(response);
+        }, 0);
 
-      if (response.data.message === "Results logged") {
+        const body = {
+            score: score,
+            time: timeTaken,
+            category: categoryName,
+            difficulty: difficulty
+        }
 
-        history.push('/profile');
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
 
-      } else if (response.data.message === "not logged-in"){
+        const response = await axios.post('/quiz', body, config);
+        console.log(response);
 
-        history.push('/')
-      }
+        if (response.data.message === "Results logged") {
 
+          history.push('/profile');
+
+        } else if (response.data.message === "not logged-in"){
+
+          history.push('/')
+        }
+    }
   }
 
     useEffect(() => {
@@ -352,47 +368,44 @@ const Quiz = (props) => {
     }, [sessionToken])
   // }, [sessionToken, tokenChanged])  causes a loop because session token not updating?
 
-      console.log(sessionToken)
-      
+      // console.log(sessionToken)
+      // console.log(questions)
+  
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
-
-  return (
-    <div class="page" id="quiz" >
-      <h1 id="quiz-head" >Quiz Page</h1>
-      {isLoading ? <p>...loading</p> : 
-      <div id="quiz-info" >
-        <h2>Category: {categoryName} </h2>
-        <h2>Difficulty: {difficulty}</h2>  
-      </div>
-      }
-      <div id="time-container" >
-        <label>Timer:</label>
-        <h4><Timer getTimeTaken={getTimeTaken}/></h4>
-      </div>
-      <form onSubmit={formHandler}>
-        <div id="question-box">
-          {questions.map((question, questionInd) => {
-            return (
-              <div id="question" key={questionInd} >
-                <h4> {question.question} </h4>
-                {question.answers.map((answer, answerInd) => {
-                  return(
-                    <div id="answers" key={answerInd}>
-                      <label htmlFor={question.number}>{answer.answer}</label>
-                      <input type="radio" name={question.number} value={answer.correct} onChange={(event) => onRadioChange(answerInd, questionInd, event)}/>
-                    </div>
-                  )
-                })}
+        return (
+          <div>
+            <h1>Quiz Page</h1>
+            {isLoading ? <p>...loading</p> : 
+            <div>
+            <h2>Category:{categoryName} </h2>
+            <h2>Difficulty:{difficulty}</h2>  
+            <p>Timer:<Timer getTimeTaken={getTimeTaken}/></p>
               </div>
-            )
-          })}
-        </div>
-        <input id="quiz-submit" type="submit" value="Submit" />
-      </form>            
-    </div>
-  )
+            }
+                <form onSubmit={formHandler}>
+                    {questions.map((question, questionInd) => {
+                        return (
+                                <div key={questionInd} >
+                                    <p> {question.question} </p>
+                                    {question.answers.map((answer, answerInd) => {
+                                        return(
+                                            <div key={answerInd}>
+                                                <label htmlFor={question.number}>{answer.answer}</label>
+                                                <input type="radio" name={question.number} value={answer.correct} onChange={(event) => onRadioChange(answerInd, questionInd, event)}/>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            )
+                        })
+                    }
+                    <input type="submit" value="Submit" />
+                </form>  
+                {showPopup ? <Popup closePopup={togglePopup}/> : null}          
+            </div>
+        )
 }
 
 export default Quiz
