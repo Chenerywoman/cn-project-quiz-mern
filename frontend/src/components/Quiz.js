@@ -310,9 +310,9 @@ const Quiz = (props) => {
 
     }
 
-    const togglePopup = () => {
-      setShowPopup(!showPopup)
-    }
+      const togglePopup = () => {
+        setShowPopup(!showPopup)
+      }
 
     const formHandler = async (event) => {
       console.log('in form handler')
@@ -324,7 +324,7 @@ const Quiz = (props) => {
 
       if (!allAnswered) {
 
-          togglePopup();
+          if (!showPopup)  setShowPopup(true);
       
         } else {
 
@@ -381,9 +381,9 @@ const Quiz = (props) => {
             <div>
             <h2>Category:{categoryName} </h2>
             <h2>Difficulty:{difficulty}</h2>  
-            </div>
+            <p>Timer:<Timer getTimeTaken={getTimeTaken}/></p>
+              </div>
             }
-              Timer:<Timer getTimeTaken={getTimeTaken}/>
                 <form onSubmit={formHandler}>
                     {questions.map((question, questionInd) => {
                         return (
