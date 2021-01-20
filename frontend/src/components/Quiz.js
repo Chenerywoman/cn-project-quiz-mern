@@ -310,9 +310,9 @@ const Quiz = (props) => {
 
     }
 
-      const togglePopup = () => {
-        setShowPopup(!showPopup)
-      }
+      // const togglePopup = () => {
+      //   setShowPopup(!showPopup)
+      // }
 
     const formHandler = async (event) => {
       console.log('in form handler')
@@ -408,6 +408,7 @@ const Quiz = (props) => {
             )
           })}
         </div>
+        {showPopup ? <Popup /> : null}
         <input id="quiz-submit" type="submit" value="Submit" />
       </form>            
     </div>
