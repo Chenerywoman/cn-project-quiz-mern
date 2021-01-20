@@ -2,6 +2,7 @@ import React, {useEffect, useState, useCallback} from 'react';
 import axios from 'axios';
 import {useHistory, Redirect} from 'react-router-dom';
 import Timer from './Timer';
+import Popup from './Popup';
 
 const Quiz = (props) => {
 
@@ -18,6 +19,7 @@ const Quiz = (props) => {
     const [noResults, setNoResults] = useState(false);
     const [timeTaken, setTimeTaken] = useState(0);
     const [sessionToken, setSessionToken] = useState("");
+    const [showPopup, setShowPopup] = useState(false);
     const [tokenChanged, setTokenChanged] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -304,57 +306,59 @@ const Quiz = (props) => {
 
       }, 0)
 
-      return allChecked > 0 ? false : true
+      return allChecked < 10 ? false : true
 
+    }
+
+    const togglePopup = () => {
+      setShowPopup(!showPopup)
     }
 
     const formHandler = async (event) => {
       console.log('in form handler')
 
-      // questions.forEach((elem, ind, arr) => {
-      //   console.log('in questions')
-      //   if (elem.selected === false){
-      //     console.log('not all selected')
-      //   }
-
-      // });
-
-      console.log(checkAllAnswered(questions))
-     
-        
       event.preventDefault();
 
-      const score = answers.reduce((acc, curr, ind, arr) => {
+      const allAnswered = checkAllAnswered(questions);
+      console.log(allAnswered)
 
-          return curr ? acc + 1 : acc;
+      if (!allAnswered) {
 
-      }, 0);
+          togglePopup();
+      
+        } else {
 
-      const body = {
-          score: score,
-          time: timeTaken,
-          category: categoryName,
-          difficulty: difficulty
-      }
+        const score = answers.reduce((acc, curr, ind, arr) => {
 
-      const config = {
-          headers: {
-              'Content-Type': 'application/json'
-          }
-      }
+            return curr ? acc + 1 : acc;
 
-      const response = await axios.post('/quiz', body, config);
-      console.log(response);
+        }, 0);
 
-      if (response.data.message === "Results logged") {
+        const body = {
+            score: score,
+            time: timeTaken,
+            category: categoryName,
+            difficulty: difficulty
+        }
 
-        history.push('/profile');
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
 
-      } else if (response.data.message === "not logged-in"){
+        const response = await axios.post('/quiz', body, config);
+        console.log(response);
 
-        history.push('/')
-      }
+        if (response.data.message === "Results logged") {
 
+          history.push('/profile');
+
+        } else if (response.data.message === "not logged-in"){
+
+          history.push('/')
+        }
+    }
   }
 
     useEffect(() => {
@@ -365,8 +369,8 @@ const Quiz = (props) => {
   // }, [sessionToken, tokenChanged])  causes a loop because session token not updating?
 
       // console.log(sessionToken)
-      console.log(questions)
-      
+      // console.log(questions)
+  
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
@@ -398,7 +402,8 @@ const Quiz = (props) => {
                         })
                     }
                     <input type="submit" value="Submit" />
-                </form>            
+                </form>  
+                {showPopup ? <Popup closePopup={togglePopup}/> : null}          
             </div>
         )
 }
