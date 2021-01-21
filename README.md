@@ -26,7 +26,6 @@ Dependencies used the frontend include:
 *  react-router-dom version 5.2.0
 *  axios version 0.21.1
 
-
 ## Backend
 
 The backend used the Express web framework for Node.js. 
@@ -43,7 +42,6 @@ Dependencies for the project are:
   * cors version 2.8.5
   * concurrently version 5.3.0
    
-
 ## Styling and responsiveness
 
 The website (https://coolors.co/) was used to provide a colour scheme for the webpage.  
