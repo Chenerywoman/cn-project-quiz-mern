@@ -289,6 +289,12 @@ app.get('/league', async (req, res) => {
     );
 });
 
+//logout
+app.get('/logout', auth.logout, (req, res) => {
+    res.json({
+        message: "Logged Out"
+    });
+});
 
 //error handling
 app.get("*", (req, res) => {

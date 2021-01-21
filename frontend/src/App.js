@@ -11,6 +11,7 @@ import Profile from './components/Profile';
 import League from './components/League';
 import ErrorPage from './components/ErrorPage';
 import Timer from './components/Timer';
+import Logout from './components/Logout'
 import './App.css';
 
 function App() {
@@ -91,6 +92,7 @@ function App() {
         <Route exact path="/league" component={League} />
         <Route exact path="/error" component={ErrorPage} />
         <Route exact path="/timer" component={Timer} />
+        <Route exact path="/logout" component={Logout} />
       </Switch>
     </BrowserRouter>
   );
