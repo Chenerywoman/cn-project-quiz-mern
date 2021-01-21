@@ -33,7 +33,7 @@ console.log(categories)
             <h1 id="select-head" >Select Your Quiz</h1>
 
             <form onSubmit={formHandler}>
-                <div>
+                <div id="selector">
                     <label>Category: </label>
                     <select required name="category" onChange={(e) => updateCategory(e.target.value)}>
                         {categories.map((category, ind) => {
