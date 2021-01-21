@@ -11,11 +11,12 @@ const Quiz = (props) => {
     const {
         category,
         difficulty,
+        categoryName
     } = props;
    
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
-    const [categoryName, setCategoryName] = useState("");
+    // const [categoryName, setCategoryName] = useState("");
     const [noResults, setNoResults] = useState(false);
     const [timeTaken, setTimeTaken] = useState(0);
     const [sessionToken, setSessionToken] = useState("");
@@ -53,91 +54,6 @@ const Quiz = (props) => {
       }
     };
   
-    
-    const getCategoryName = (catNumber) => {
-
-        let categoryName = "";
-        
-        switch (catNumber){
-          case "9": 
-           categoryName = "General Knowledge"; 
-            break;
-          case "10": 
-            categoryName = "Books"; 
-            break;
-          case "11": 
-            categoryName = "Film"; 
-            break;
-          case "12": 
-            categoryName = "Music"; 
-            break;
-          case "13": 
-            categoryName = "Musicals and Theatres"; 
-            break;
-          case "14":
-            categoryName = "Television";
-            break;
-          case "15":
-            categoryName = "Video Games";
-            break;
-          case "16":
-            categoryName = "Board Games";
-            break;
-          case "17":
-            categoryName = "Science and Nature";
-            break;
-          case "18":
-            categoryName = "Computers";
-            break;
-          case "19":
-            categoryName = "Mathematics";
-            break;
-          case "20":
-            categoryName = "Mythology";
-            break;
-          case "21":
-            categoryName = "Sports";
-            break;
-          case "22":
-            categoryName = "Geography"
-            break;
-          case "23":
-            categoryName = "History";
-            break;
-          case "24":
-            categoryName = "Politics";
-            break;
-          case "25":
-            categoryName = "Art";
-            break;
-          case "26":
-            categoryName = "Celebrities";
-            break;
-          case "27":
-            categoryName = "Animals";
-            break;
-          case "28":
-            categoryName = "Vehicles";
-            break;
-          case "29":
-            categoryName = "Comics";
-            break;
-          case "30":
-            categoryName = "Gadgets";
-            break;
-          case "31":
-            categoryName = "Japanese Amime and Manga"
-            break;
-          case "32":
-            categoryName = "Cartoon and Animation";
-            break;
-          default:
-            categoryName = ""
-        }
-         
-        setCategoryName(categoryName);
-    }    
-
     const fetchQuestions  = async () => {
       console.log('in fetch questions')
 
@@ -238,8 +154,6 @@ const Quiz = (props) => {
 
               let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
               setQuestions(questionsAndScrambledAnswers);
-              getCategoryName(category);
-
               setIsLoading(false)
 
           } else if (response.data && response.data.response_code === 1) {
@@ -273,7 +187,6 @@ const Quiz = (props) => {
   
                   let questionsAndScrambledAnswers = scrambledAnswersCallBack(secondResponse.data.results);
                   setQuestions(questionsAndScrambledAnswers);
-                  getCategoryName(category);
                   setTokenChanged(!tokenChanged)  //- this causes a loop as update token not working?
                   setIsLoading(false)
   
@@ -290,20 +203,17 @@ const Quiz = (props) => {
             getSessionToken();
         }
       
-    } 
+    }
 
     const onRadioChange = (answerInd, questionInd, event) => {
 
-      // update answers with true or false
       let correctOrIncorrect = questions[questionInd].answers[answerInd].correct;
       const answersPlaceholder = [...answers]
       answersPlaceholder.splice(questionInd, 1, correctOrIncorrect);
 
-      // update that question selected
       const questionsPlaceholder = [...questions];
       questionsPlaceholder[questionInd].selected = true;
 
-      // update state of questions and answers
       setQuestions(questionsPlaceholder);
       setAnswers(answersPlaceholder);
     }
@@ -319,10 +229,6 @@ const Quiz = (props) => {
       return allChecked < 10 ? false : true
 
     }
-
-      // const togglePopup = () => {
-      //   setShowPopup(!showPopup)
-      // }
 
     const formHandler = async (event) => {
       console.log('in form handler')
@@ -378,9 +284,6 @@ const Quiz = (props) => {
     }, [sessionToken])
   // }, [sessionToken, tokenChanged])  causes a loop because session token not updating?
 
-      // console.log(sessionToken)
-      // console.log(questions)
-  
       if (noResults) {
         return <Redirect to = "/error" / >
       } 

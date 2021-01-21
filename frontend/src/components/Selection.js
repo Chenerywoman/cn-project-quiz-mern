@@ -27,6 +27,7 @@ const Selection = (props) => {
         updateDifficulty("easy");
         
     },[updateDifficulty]);
+
 console.log(categories)
     return (
         <div class="page" id="selection" >
