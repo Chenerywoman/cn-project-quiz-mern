@@ -60,10 +60,10 @@ const Login = () => {
             <form onSubmit={formHandler} >
                 <div>
                     <label>User Email</label> <br />
-                    <input required type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
+                    <input required class="login" type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
 
                     <label>User Password</label> <br />
-                    <input required type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
+                    <input required class="login" type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
                 </div>
 
                 <button id="login-submit" type="submit" >Login</button>

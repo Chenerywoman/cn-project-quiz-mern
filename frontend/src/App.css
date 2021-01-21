@@ -238,6 +238,10 @@ input, select {
   font-size: 1.5rem;
 }
 
+input .login, input .register {
+  width: 30rem;
+}
+
 #question-box input {
   margin: 0;
 }
@@ -282,6 +286,13 @@ input, select {
 #time-container Label{
   font-size: 2rem;
   font-family: 'Russo One', sans-serif;
+}
+
+#error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 @media screen and (max-width: 768px) {

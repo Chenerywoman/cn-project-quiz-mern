@@ -181,7 +181,7 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
 
     //Probably need to build in if takes 10 mins or longer
         for(let i = 0; i < times.length; i++) {
-            let hms = "01:0" + times[i]; //gives hours:minutes:seconds +1hour otherwise it won't work
+            let hms = "01:" + times[i]; //gives hours:minutes:seconds +1hour otherwise it won't work
             let fullTime = new Date("1970-01-01T" + hms); //gives full date and time including date of 1/1/70 to allow you to extract time as milliseconds
 
             timeMS = fullTime.getTime(); //extracts time in milliseconds
