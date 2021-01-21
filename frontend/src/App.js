@@ -24,15 +24,26 @@ function App() {
 
   const updateCategory = useCallback((event) => {
 
-    const categoryName = categories.find(elem => elem.id.toString() === event).name;
-
-    setCategoryName(categoryName)
     setCategory(event);
   }, []);
+
+  const updateCategoryName = useCallback((name) => {
+
+    setCategoryName(name)
+  }, [])
 
   const updateDifficulty = useCallback((event) => {
     setDifficulty(event);
   },[]);
+
+  const updateCategoryAndName = (event) => {
+
+    const categoryName = categories.find(elem => elem.id.toString() === event).name
+
+    setCategoryName(categoryName)
+    setCategory(event)
+
+  }
 
   const fetchCategories = async () => {
       
@@ -65,6 +76,8 @@ function App() {
           <Selection 
             updateCategory={updateCategory} 
             updateDifficulty={updateDifficulty}
+            updateCategoryName={updateCategoryName}
+            updateCategoryAndName={updateCategoryAndName}
             categories={categories}
             {...props}/>} />
         <Route exact path="/quiz" render={() => 
