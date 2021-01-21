@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Link, useHistory} from 'react-router-dom';
 import axios from 'axios';
 
@@ -12,24 +12,30 @@ const Selection = (props) => {
         categories
     } = props;
 
+    const [isLoading, setIsLoading] = useState(false);
+
     useEffect(() => {
         fetchData();
     }, []);
 
     const fetchData = async () => {
+        setIsLoading(true);
         const response = await axios.get('/selection');
         console.log(response.data.message)
         if(response.data.message !== "User Found") {
             console.log("redirecting")
             history.push('/login');
         };
+        setIsLoading(false);
     };
 
     const history = useHistory();
 
     const formHandler = async (event) => {
+        setIsLoading(true);
         event.preventDefault();
         console.log("form handled");
+        setIsLoading(false);
     };
     
 
@@ -47,6 +53,7 @@ console.log(categories)
         <div class="page" id="selection" >
             <h1 id="select-head" >Select Your Quiz</h1>
 
+            {isLoading ? <p>...loading</p> : 
             <form onSubmit={formHandler}>
                 <div id="selector">
                     <label>Category: </label>
@@ -64,6 +71,7 @@ console.log(categories)
                 </div>
                 <Link to = "/quiz" ><button id="generation" type="submit" >Generate Quiz</button></Link>
             </form>
+            }
         </div>
     )
 }
