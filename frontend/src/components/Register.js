@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
@@ -8,6 +8,19 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [conf, setConf] = useState("");
     const [backendResponse, setBackendResponse] = useState("");
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        
+        const response = await axios.get('/register');
+
+        if(response.data.message === "Already logged in") {
+            history.push('/profile');
+        };
+    };
 
     const history = useHistory();
 

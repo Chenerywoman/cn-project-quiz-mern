@@ -8,7 +8,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser'); //needs to be initialised
 const auth = require('./middleware/auth');
-const { response } = require('express');
 
 dotenv.config( { path: './.env' } );
 
@@ -29,6 +28,17 @@ mongoose.connect( process.env.DB_URL, {
 //home page
 app.get('/', (req, res) => {
     res.send("Hello from Nodejs");
+});
+
+//register page
+app.get('/register', auth.isLoggedIn, async (req, res) => {
+    if(req.userFound) {
+        res.json({
+            message: "Already logged in"
+        });
+    } else {
+        console.log("reaching register on backend");
+    };
 });
 
 //Registering
@@ -297,6 +307,7 @@ app.get('/league', async (req, res) => {
         };
     });
     const topTen = resultInfo.slice(0, 10);
+    console.log(topTen);
     
     res.json({
         results: topTen
@@ -309,11 +320,6 @@ app.get('/logout', auth.logout, (req, res) => {
     res.json({
         message: "Logged Out"
     });
-});
-
-//error handling
-app.get("*", (req, res) => {
-    res.send("error");
 });
 
 app.listen(5000, () => { 

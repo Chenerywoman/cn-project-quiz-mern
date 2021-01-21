@@ -36,6 +36,7 @@ const League = () => {
             };
             newArr[i].difficulty = difficultyCap;
         }
+        console.log(newArr);
         setTopTen(newArr);
         
     };

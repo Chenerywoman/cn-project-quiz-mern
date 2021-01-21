@@ -11,7 +11,8 @@ import Profile from './components/Profile';
 import League from './components/League';
 import ErrorPage from './components/ErrorPage';
 import Timer from './components/Timer';
-import Logout from './components/Logout'
+import Logout from './components/Logout';
+import LocationError from './components/LocationError';
 import './App.css';
 
 function App() {
@@ -93,6 +94,7 @@ function App() {
         <Route exact path="/error" component={ErrorPage} />
         <Route exact path="/timer" component={Timer} />
         <Route exact path="/logout" component={Logout} />
+        <Route path="*" component={LocationError} />
       </Switch>
     </BrowserRouter>
   );
