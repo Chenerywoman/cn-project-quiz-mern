@@ -39,7 +39,11 @@ const Quiz = (props) => {
 
       try {
 
-        await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${sessionToken}`);
+        const updateSessionTokenResponse = await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${sessionToken}`);
+
+        console.log(sessionToken)
+        console.log(updateSessionTokenResponse)
+        return updateSessionTokenResponse.data.response_code;
 
       } catch (error){
           
@@ -256,26 +260,32 @@ const Quiz = (props) => {
           } else if (response.data && response.data.response_code === 4) {
 
               console.log("in response code 4 else if ");
-              await updateSessionToken()
+              const resetTokenResponse = await updateSessionToken();
+           
+              if (resetTokenResponse === 0) {
 
-              const secondResponse = await fetchQuestions();
-              console.log(secondResponse)
+                const secondResponse = await fetchQuestions();
+                console.log(secondResponse)
+  
+                if (secondResponse.data.response_code === 4) {
+                  setNoResults(true);
+                } else {
+  
+                  let questionsAndScrambledAnswers = scrambledAnswersCallBack(secondResponse.data.results);
+                  setQuestions(questionsAndScrambledAnswers);
+                  getCategoryName(category);
+                  setTokenChanged(!tokenChanged)  //- this causes a loop as update token not working?
+                  setIsLoading(false)
+  
+                }
 
-              if (secondResponse.data.response_code === 4) {
-                setNoResults(true);
               } else {
-
-                let questionsAndScrambledAnswers = scrambledAnswersCallBack(secondResponse.data.results);
-                setQuestions(questionsAndScrambledAnswers);
-                getCategoryName(category);
-                setTokenChanged(!tokenChanged)  //- this causes a loop as update token not working?
-                setIsLoading(false)
-
+                setNoResults(true);
               }
+             
 
           } 
   
-
       } else {
             getSessionToken();
         }
@@ -310,9 +320,9 @@ const Quiz = (props) => {
 
     }
 
-      const togglePopup = () => {
-        setShowPopup(!showPopup)
-      }
+      // const togglePopup = () => {
+      //   setShowPopup(!showPopup)
+      // }
 
     const formHandler = async (event) => {
       console.log('in form handler')
@@ -408,6 +418,7 @@ const Quiz = (props) => {
             )
           })}
         </div>
+        {showPopup ? <Popup /> : null}
         <input id="quiz-submit" type="submit" value="Submit" />
       </form>            
     </div>
