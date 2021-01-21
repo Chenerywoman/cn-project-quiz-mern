@@ -15,7 +15,7 @@ const Quiz = (props) => {
         sessionToken
     } = props;
     
-    const [noOfQuestions, setNoOfQuestions] = useState(10)
+    // const [noOfQuestions, setNoOfQuestions] = useState(10)
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
     const [noResults, setNoResults] = useState(false);
@@ -53,9 +53,7 @@ const Quiz = (props) => {
 
         }
         
-        if (number < 11) {
-          setNoOfQuestions(number)
-        }
+        return number; 
 
         } catch (error) {
           console.log(error)
@@ -64,22 +62,30 @@ const Quiz = (props) => {
           
     }
 
-    const fetchQuestions  = async () => {
+    const fetchQuestions  = async (number) => {
       console.log('in fetch questions')
-      console.log(noOfQuestions)
+        
+      let noOfQuestions = 10;
 
-        try {
-          console.log(categoryName)
-          console.log(category)
-          console.log(difficulty)
+      if (number < 11) {
 
-          const response = await axios.get(`https://opentdb.com/api.php?amount=${noOfQuestions}&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
-          return response; 
+        noOfQuestions = number;
 
-        } catch (error) {
-          console.log(error)
-          history.push('/error')
-        }
+      }
+
+      try {
+        console.log(categoryName)
+        console.log(category)
+        console.log(difficulty)
+        console.log(noOfQuestions)
+
+        const response = await axios.get(`https://opentdb.com/api.php?amount=${7}&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+        return response; 
+
+      } catch (error) {
+        console.log(error)
+        history.push('/error')
+      }
 
     }
 
@@ -163,7 +169,10 @@ const Quiz = (props) => {
 
       if (sessionToken) {
 
-          const response = await fetchQuestions();
+          const noOfQuestions = await getNoOfQuestions();
+          console.log(noOfQuestions)
+
+          const response = await fetchQuestions(noOfQuestions);
         
           if (response.data && response.data.response_code === 0) {
 
@@ -292,9 +301,9 @@ const Quiz = (props) => {
     }
   }
 
-    useEffect(() => {
-      getNoOfQuestions()
-    }, [])
+    // useEffect(() => {
+    //   getNoOfQuestions()
+    // }, [])
 
     useEffect(() => {
 
@@ -304,8 +313,7 @@ const Quiz = (props) => {
   // }, [sessionToken, tokenChanged])  causes a loop because session token not updating?
 
 
-  console.log(noOfQuestions)
-console.log(sessionToken)
+// console.log(sessionToken)
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
