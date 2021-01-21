@@ -6,8 +6,6 @@ import Popup from './Popup';
 
 const Quiz = (props) => {
 
-  const history = useHistory();
-  
     const {
         category,
         difficulty,
@@ -16,61 +14,71 @@ const Quiz = (props) => {
         updateSessionToken,
         sessionToken
     } = props;
-   
+    
+    const [noOfQuestions, setNoOfQuestions] = useState(10)
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
-    // const [categoryName, setCategoryName] = useState("");
     const [noResults, setNoResults] = useState(false);
     const [timeTaken, setTimeTaken] = useState(0);
-    // const [sessionToken, setSessionToken] = useState("");
     const [showPopup, setShowPopup] = useState(false);
     const [tokenChanged, setTokenChanged] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+    const history = useHistory();
+
     const getTimeTaken = useCallback((time) => {
 
-      setTimeTaken(time);
-    }, [])
+        setTimeTaken(time);
+      }, [])
 
-    // const getSessionToken = async () => {  
-    //   console.log('in get session token') 
-    //   const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
-    //   setSessionToken(sessionTokenResponse.data.token);
-    // };
-  
-    // const updateSessionToken = async () => {
-    //   console.log('in update session token')
+    const getNoOfQuestions = async () => {
 
-    //   try {
+      let number = 0;
 
-    //     const updateSessionTokenResponse = await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${sessionToken}`);
+      try {
+        const noOfQuestionsResponse = await axios.get(`https://opentdb.com/api_count.php?category=${category}`);
+        console.log(noOfQuestionsResponse);
 
-    //     console.log(sessionToken)
-    //     console.log(updateSessionTokenResponse)
-    //     return updateSessionTokenResponse.data.response_code;
+        if (difficulty === 'easy') {
 
-    //   } catch (error){
+          number = noOfQuestionsResponse.data.category_question_count.total_easy_question_count;
+            
+        } else if (difficulty === 'medium') {
+
+          number = noOfQuestionsResponse.data.category_question_count.total_medium_question_count;
+
+        } else if (difficulty === 'hard') {
           
-    //     console.log(error)
-    //     setNoResults(true);
+          number = noOfQuestionsResponse.data.category_question_count.total_hard_question_count;
 
-    //   }
-    // };
-  
+        }
+        
+        if (number < 11) {
+          setNoOfQuestions(number)
+        }
+
+        } catch (error) {
+          console.log(error)
+        
+        }
+          
+    }
+
     const fetchQuestions  = async () => {
       console.log('in fetch questions')
+      console.log(noOfQuestions)
 
         try {
           console.log(categoryName)
           console.log(category)
           console.log(difficulty)
 
-          const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+          const response = await axios.get(`https://opentdb.com/api.php?amount=${noOfQuestions}&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
           return response; 
 
         } catch (error) {
           console.log(error)
-          setNoResults(true);
+          history.push('/error')
         }
 
     }
@@ -152,6 +160,7 @@ const Quiz = (props) => {
 
       setIsLoading(true)
 
+
       if (sessionToken) {
 
           const response = await fetchQuestions();
@@ -193,7 +202,7 @@ const Quiz = (props) => {
   
                   let questionsAndScrambledAnswers = scrambledAnswersCallBack(secondResponse.data.results);
                   setQuestions(questionsAndScrambledAnswers);
-                  setTokenChanged(!tokenChanged)  //- this causes a loop as update token not working?
+                  setTokenChanged(!tokenChanged)  
                   setIsLoading(false)
   
                 }
@@ -284,11 +293,18 @@ const Quiz = (props) => {
   }
 
     useEffect(() => {
+      getNoOfQuestions()
+    }, [])
+
+    useEffect(() => {
 
       getAndPrepareQuiz()
 
     }, [sessionToken])
   // }, [sessionToken, tokenChanged])  causes a loop because session token not updating?
+
+
+  console.log(noOfQuestions)
 console.log(sessionToken)
       if (noResults) {
         return <Redirect to = "/error" / >
