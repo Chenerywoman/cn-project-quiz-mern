@@ -6,6 +6,8 @@ const Selection = (props) => {
     const {
         updateCategory, 
         updateDifficulty,
+        updateCategoryName,
+        updateCategoryAndName,
         categories
     } = props;
 
@@ -16,17 +18,13 @@ const Selection = (props) => {
     
 
     useEffect(() => {
-
+    
       updateCategory("9");
+      updateCategoryName("General Knowledge");
+      updateDifficulty("easy");
 
-    },[updateCategory]);
+    },[updateCategory, updateCategoryName, updateDifficulty]);
 
-
-    useEffect(() => {
-
-        updateDifficulty("easy");
-        
-    },[updateDifficulty]);
 
 console.log(categories)
     return (
@@ -36,7 +34,7 @@ console.log(categories)
             <form onSubmit={formHandler}>
                 <div>
                     <label>Category: </label>
-                    <select required name="category" onChange={(e) => updateCategory(e.target.value)}>
+                    <select required name="category" onChange={(e) => updateCategoryAndName(e.target.value)}>
                         {categories.map((category, ind) => {
                             return <option key={ind} value={category.id}>{category.name}</option>
                         })}
