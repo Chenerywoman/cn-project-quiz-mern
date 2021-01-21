@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
+import axios from 'axios';
 
 const Selection = (props) => {
     
@@ -10,6 +11,21 @@ const Selection = (props) => {
         updateCategoryAndName,
         categories
     } = props;
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        const response = await axios.get('/selection');
+        console.log(response.data.message)
+        if(response.data.message !== "User Found") {
+            console.log("redirecting")
+            history.push('/login');
+        };
+    };
+
+    const history = useHistory();
 
     const formHandler = async (event) => {
         event.preventDefault();

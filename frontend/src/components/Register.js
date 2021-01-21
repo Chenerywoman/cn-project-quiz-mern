@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
@@ -8,6 +8,19 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [conf, setConf] = useState("");
     const [backendResponse, setBackendResponse] = useState("");
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        
+        const response = await axios.get('/register');
+
+        if(response.data.message === "Already logged in") {
+            history.push('/profile');
+        };
+    };
 
     const history = useHistory();
 
@@ -51,16 +64,16 @@ const Register = () => {
             <form onSubmit={formHandler} >
                 <div>
                     <label>User Name</label> <br />
-                    <input required type="text" name="userName" onChange={(e) => setName(e.target.value)} /><br />
+                    <input required class="register" type="text" name="userName" onChange={(e) => setName(e.target.value)} /><br />
 
                     <label>User Email</label> <br />
-                    <input required type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
+                    <input required class="register" type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
 
                     <label>User Password</label> <br />
-                    <input required type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
+                    <input required class="register" type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
 
                     <label>Confirm Password</label> <br />
-                    <input class="bottom" required type="password" name="confPassword" onChange={(e) => setConf(e.target.value)} /><br />
+                    <input class="register bottom" required type="password" name="confPassword" onChange={(e) => setConf(e.target.value)} /><br />
                     <p class="error" >{ backendResponse }</p>
                 </div>
 
