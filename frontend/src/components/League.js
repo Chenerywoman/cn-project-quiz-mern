@@ -20,6 +20,22 @@ const League = () => {
             }
             newArr.push(newObj);
         };
+        for (let i = 0; i < newArr.length; i++) {
+            let difficulty = newArr[i].difficulty;
+            let difficultyCap;
+            switch (difficulty) {
+                case "easy":
+                    difficultyCap = "Easy";
+                    break;
+                case "medium":
+                    difficultyCap = "Medium";
+                    break;
+                case "hard":
+                    difficultyCap = "Hard";
+                    break;
+            };
+            newArr[i].difficulty = difficultyCap;
+        }
         setTopTen(newArr);
         
     };

@@ -184,7 +184,7 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
             totScores += resultInfo[i].score; 
             times.push(resultInfo[i].time); //need to convert from str
         };
-        const aveScore =  totScores/quizzes;
+        const aveScore =  Math.round(totScores/quizzes);
 
         //convert times from string
         let newArr = [];
@@ -215,6 +215,21 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
         const aveMS3 = aveMS2.toString();
         const aveTime = aveMS3.slice(19, 24);
 
+        let difficulty = resultInfo[resultInfo.length - 1].difficulty;
+        console.log(difficulty);
+        let difficultyCap;
+        switch (difficulty) {
+            case "easy":
+                difficultyCap = "Easy";
+                break;
+            case "medium":
+                difficultyCap = "Medium";
+                break;
+            case "hard":
+                difficultyCap = "Hard";
+                break;
+        };
+
         res.json({
             users:
                 {
@@ -233,7 +248,7 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
                     score: resultInfo[resultInfo.length - 1].score,
                     time: resultInfo[resultInfo.length - 1].time,
                     category: resultInfo[resultInfo.length - 1].category,
-                    difficulty: resultInfo[resultInfo.length - 1].difficulty
+                    difficulty: difficultyCap
                 }
             }
         );
