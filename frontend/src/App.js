@@ -16,12 +16,17 @@ import './App.css';
 function App() {
   
   const [category, setCategory] = useState("9");
+  const [categoryName, setCategoryName] = useState("General Knowledge")
   const [difficulty, setDifficulty] = useState("easy");
   const [categories, setCategories] = useState([]);
 
   const history = useHistory();
 
   const updateCategory = useCallback((event) => {
+
+    const categoryName = categories.find(elem => elem.id.toString() === event).name;
+
+    setCategoryName(categoryName)
     setCategory(event);
   }, []);
 
@@ -65,6 +70,7 @@ function App() {
         <Route exact path="/quiz" render={() => 
           <Quiz 
             category={category}
+            categoryName={categoryName}
             difficulty={difficulty}
             />}
           />
