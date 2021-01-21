@@ -113,6 +113,19 @@ app.post('/login', auth.isLoggedIn, async (req, res) => {
     };
 });
 
+//selection load
+app.get('/selection', auth.isLoggedIn, async (req, res) => {
+    if(req.userFound) {
+        res.json({
+            message: "User Found"
+        });
+    } else {
+        res.json({
+            message: "Not logged in"
+        });
+    };
+});
+
 //quiz scores
 app.post('/quiz', auth.isLoggedIn, async (req, res) => {
     console.log("reaching backend"); //checking data is received on backend
