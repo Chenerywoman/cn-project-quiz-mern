@@ -8,7 +8,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser'); //needs to be initialised
 const auth = require('./middleware/auth');
-const { response } = require('express');
 
 dotenv.config( { path: './.env' } );
 
@@ -29,6 +28,17 @@ mongoose.connect( process.env.DB_URL, {
 //home page
 app.get('/', (req, res) => {
     res.send("Hello from Nodejs");
+});
+
+//register page
+app.get('/register', auth.isLoggedIn, async (req, res) => {
+    if(req.userFound) {
+        res.json({
+            message: "Already logged in"
+        });
+    } else {
+        console.log("reaching register on backend");
+    };
 });
 
 //Registering
@@ -113,6 +123,19 @@ app.post('/login', auth.isLoggedIn, async (req, res) => {
     };
 });
 
+//selection load
+app.get('/selection', auth.isLoggedIn, async (req, res) => {
+    if(req.userFound) {
+        res.json({
+            message: "User Found"
+        });
+    } else {
+        res.json({
+            message: "Not logged in"
+        });
+    };
+});
+
 //quiz scores
 app.post('/quiz', auth.isLoggedIn, async (req, res) => {
     console.log("reaching backend"); //checking data is received on backend
@@ -171,7 +194,7 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
             totScores += resultInfo[i].score; 
             times.push(resultInfo[i].time); //need to convert from str
         };
-        const aveScore =  totScores/quizzes;
+        const aveScore =  Math.round(totScores/quizzes);
 
         //convert times from string
         let newArr = [];
@@ -181,7 +204,7 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
 
     //Probably need to build in if takes 10 mins or longer
         for(let i = 0; i < times.length; i++) {
-            let hms = "01:0" + times[i]; //gives hours:minutes:seconds +1hour otherwise it won't work
+            let hms = "01:" + times[i]; //gives hours:minutes:seconds +1hour otherwise it won't work
             let fullTime = new Date("1970-01-01T" + hms); //gives full date and time including date of 1/1/70 to allow you to extract time as milliseconds
 
             timeMS = fullTime.getTime(); //extracts time in milliseconds
@@ -202,6 +225,21 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
         const aveMS3 = aveMS2.toString();
         const aveTime = aveMS3.slice(19, 24);
 
+        let difficulty = resultInfo[resultInfo.length - 1].difficulty;
+        console.log(difficulty);
+        let difficultyCap;
+        switch (difficulty) {
+            case "easy":
+                difficultyCap = "Easy";
+                break;
+            case "medium":
+                difficultyCap = "Medium";
+                break;
+            case "hard":
+                difficultyCap = "Hard";
+                break;
+        };
+
         res.json({
             users:
                 {
@@ -220,7 +258,7 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
                     score: resultInfo[resultInfo.length - 1].score,
                     time: resultInfo[resultInfo.length - 1].time,
                     category: resultInfo[resultInfo.length - 1].category,
-                    difficulty: resultInfo[resultInfo.length - 1].difficulty
+                    difficulty: difficultyCap
                 }
             }
         );
@@ -269,6 +307,7 @@ app.get('/league', async (req, res) => {
         };
     });
     const topTen = resultInfo.slice(0, 10);
+    console.log(topTen);
     
     res.json({
         results: topTen
@@ -276,10 +315,11 @@ app.get('/league', async (req, res) => {
     );
 });
 
-
-//error handling
-app.get("*", (req, res) => {
-    res.send("error");
+//logout
+app.get('/logout', auth.logout, (req, res) => {
+    res.json({
+        message: "Logged Out"
+    });
 });
 
 app.listen(5000, () => { 

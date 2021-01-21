@@ -4,12 +4,14 @@ import axios from 'axios';
 const League = () => {
     const [rows, setRows] = useState([{position: 1,}, {position: 2,}, {position: 3,}, {position: 4,}, {position: 5,}, {position: 6,}, {position: 7,}, {position: 8,}, {position: 9,}, {position: 10,}]); 
     const [topTen, setTopTen] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         fetchData()
     }, []);
 
     const fetchData = async () => {
+        setIsLoading(true);
         const response = await axios.get('/league');
 
         let newArr = [];
@@ -20,15 +22,31 @@ const League = () => {
             }
             newArr.push(newObj);
         };
+        for (let i = 0; i < newArr.length; i++) {
+            let difficulty = newArr[i].difficulty;
+            let difficultyCap;
+            switch (difficulty) {
+                case "easy":
+                    difficultyCap = "Easy";
+                    break;
+                case "medium":
+                    difficultyCap = "Medium";
+                    break;
+                case "hard":
+                    difficultyCap = "Hard";
+                    break;
+            };
+            newArr[i].difficulty = difficultyCap;
+        }
         setTopTen(newArr);
-        
+        setIsLoading(false);
     };
-    console.log(topTen);
 
     return (
         <div class="page" id="league" >
             <h3>League Table</h3>
             <h1 id="top10" >Top 10</h1>
+            {isLoading ? <p>...loading</p> : 
             <table id="table" >
                 <tr>
                     <th class="header" >Position</th>
@@ -52,6 +70,7 @@ const League = () => {
                 } )}
                 
             </table>
+            }
         </div>
     )
 }

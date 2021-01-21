@@ -7,15 +7,17 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [backendResponse, setBackendResponse] = useState("");
 
+
     useEffect(() => {
         fetchData();
     }, []);
 
     const fetchData = async () => {
-        
+
         const response = await axios.get('/login');
 
         if(response.data.message === "Already logged in") {
+
             history.push('/profile');
         };
     };
@@ -49,7 +51,6 @@ const Login = () => {
         if(response.data.message === "Login Successful" || response.data.message === "Already logged in") {
             history.push('/profile');
         };
-
     };
 
     return (
@@ -60,10 +61,10 @@ const Login = () => {
             <form onSubmit={formHandler} >
                 <div>
                     <label>User Email</label> <br />
-                    <input required type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
+                    <input required class="login" type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
 
                     <label>User Password</label> <br />
-                    <input required type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
+                    <input required class="login" type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
                 </div>
 
                 <button id="login-submit" type="submit" >Login</button>
