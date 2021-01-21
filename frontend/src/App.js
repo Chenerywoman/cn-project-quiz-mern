@@ -21,8 +21,36 @@ function App() {
   const [categoryName, setCategoryName] = useState("General Knowledge")
   const [difficulty, setDifficulty] = useState("easy");
   const [categories, setCategories] = useState([]);
+  const [sessionToken, setSessionToken] = useState("");
 
   const history = useHistory();
+
+
+  const getSessionToken = async () => {  
+    console.log('in get session token') 
+    const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
+    setSessionToken(sessionTokenResponse.data.token);
+  };
+
+  const updateSessionToken = async () => {
+    console.log('in update session token')
+
+    try {
+
+      const updateSessionTokenResponse = await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${sessionToken}`);
+
+      console.log(sessionToken)
+      console.log(updateSessionTokenResponse)
+      return updateSessionTokenResponse.data.response_code;
+
+    } catch (error){
+        
+      console.log(error)
+      // setNoResults(true);
+
+    }
+  };
+
 
   const updateCategory = useCallback((event) => {
 
@@ -87,6 +115,9 @@ function App() {
             category={category}
             categoryName={categoryName}
             difficulty={difficulty}
+            getSessionToken={getSessionToken}
+            updateSessionToken={updateSessionToken}
+            sessionToken={sessionToken}
             />}
           />
         <Route exact path="/profile" component={Profile} />
