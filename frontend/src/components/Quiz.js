@@ -79,7 +79,7 @@ const Quiz = (props) => {
         console.log(difficulty)
         console.log(number)
 
-        const response = await axios.get(`https://opentdb.com/api.php?amount=${number}&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+        const response = await axios.get(`https://opentdb.com/api.php?amount=${number}&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}&encode=url3986`);
         console.log(response)
         return response; 
 
@@ -96,7 +96,7 @@ const Quiz = (props) => {
       console.log('in recursive fetch questions')
       
       let nextNumber = number - 1; 
-      const response = await axios.get(`https://opentdb.com/api.php?amount=${number}&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
+      const response = await axios.get(`https://opentdb.com/api.php?amount=${number}&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}&encode=url3986`);
 
       if (response.data.response_code !== 0 ) {
         
@@ -113,9 +113,7 @@ const Quiz = (props) => {
 
   const decodeText = (encodedText) => {
   
-    let text = document.createElement('textarea');
-    text.innerHTML = encodedText;
-    let decodedText = text.value;
+    const decodedText = decodeURIComponent(encodedText)
 
     return decodedText;
 
