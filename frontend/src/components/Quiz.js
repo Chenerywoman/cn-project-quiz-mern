@@ -271,12 +271,13 @@ const Quiz = (props) => {
 
       }, 0)
 
-      return allChecked < 10 ? false : true
+      return allChecked < array.length ? false : true
 
     }
 
     const formHandler = async (event) => {
       console.log('in form handler')
+      console.log(questions)
 
       event.preventDefault();
 
@@ -335,6 +336,7 @@ const Quiz = (props) => {
 
 
 // console.log(sessionToken)
+
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
