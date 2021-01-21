@@ -6,29 +6,26 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [backendResponse, setBackendResponse] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+
 
     useEffect(() => {
         fetchData();
     }, []);
 
     const fetchData = async () => {
-        setIsLoading(true);
-        
+
         const response = await axios.get('/login');
 
         if(response.data.message === "Already logged in") {
-            setIsLoading(false);
+
             history.push('/profile');
         };
-        setIsLoading(false);
     };
 
     const history = useHistory();
 
     const formHandler = async (event) => {
         event.preventDefault();
-        setIsLoading(true);
 
         console.log(email);
         console.log(password);
@@ -52,10 +49,8 @@ const Login = () => {
         console.log(response.data.message);
 
         if(response.data.message === "Login Successful" || response.data.message === "Already logged in") {
-            setIsLoading(false);
             history.push('/profile');
         };
-        setIsLoading(false);
     };
 
     return (
@@ -63,7 +58,6 @@ const Login = () => {
 
             <h1 id="login-head" >Login</h1>
 
-            {isLoading ? <p>...loading</p> : 
             <form onSubmit={formHandler} >
                 <div>
                     <label>User Email</label> <br />
@@ -76,7 +70,6 @@ const Login = () => {
                 <button id="login-submit" type="submit" >Login</button>
 
             </form>
-            }
             { backendResponse }
             
         </div>

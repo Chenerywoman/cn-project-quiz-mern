@@ -8,14 +8,12 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [conf, setConf] = useState("");
     const [backendResponse, setBackendResponse] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         fetchData();
     }, []);
 
     const fetchData = async () => {
-        setIsLoading(true);
         const response = await axios.get('/register');
 
         if(response.data.message === "Already logged in") {
@@ -27,7 +25,6 @@ const Register = () => {
 
     const formHandler = async (event) => {
         event.preventDefault();
-        setIsLoading(true);
 
         console.log(name);
         console.log(email);
@@ -54,7 +51,6 @@ const Register = () => {
         console.log(response.data.message);
 
         if(response.data.message === "User registered") {
-            setIsLoading(false);
             history.push('/login'); //change to login
         };
 
@@ -64,7 +60,6 @@ const Register = () => {
         <div class="page" >
             <h1 id="register-head" >Register User</h1>
 
-            {isLoading ? <p>...loading</p> :
             <form onSubmit={formHandler} >
                 <div>
                     <label>User Name</label> <br />
@@ -83,7 +78,6 @@ const Register = () => {
 
                 <button type="submit" >Register</button>
             </form>
-            }
         </div>
     )
 }
