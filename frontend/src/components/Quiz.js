@@ -11,7 +11,10 @@ const Quiz = (props) => {
     const {
         category,
         difficulty,
-        categoryName
+        categoryName,
+        getSessionToken,
+        updateSessionToken,
+        sessionToken
     } = props;
    
     const [questions, setQuestions] = useState([]);
@@ -19,7 +22,7 @@ const Quiz = (props) => {
     // const [categoryName, setCategoryName] = useState("");
     const [noResults, setNoResults] = useState(false);
     const [timeTaken, setTimeTaken] = useState(0);
-    const [sessionToken, setSessionToken] = useState("");
+    // const [sessionToken, setSessionToken] = useState("");
     const [showPopup, setShowPopup] = useState(false);
     const [tokenChanged, setTokenChanged] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -29,35 +32,38 @@ const Quiz = (props) => {
       setTimeTaken(time);
     }, [])
 
-    const getSessionToken = async () => {  
-      console.log('in get session token') 
-      const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
-      setSessionToken(sessionTokenResponse.data.token);
-    };
+    // const getSessionToken = async () => {  
+    //   console.log('in get session token') 
+    //   const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
+    //   setSessionToken(sessionTokenResponse.data.token);
+    // };
   
-    const updateSessionToken = async () => {
-      console.log('in update session token')
+    // const updateSessionToken = async () => {
+    //   console.log('in update session token')
 
-      try {
+    //   try {
 
-        const updateSessionTokenResponse = await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${sessionToken}`);
+    //     const updateSessionTokenResponse = await axios.get(`https://opentdb.com/api_token.php?command=reset&token=${sessionToken}`);
 
-        console.log(sessionToken)
-        console.log(updateSessionTokenResponse)
-        return updateSessionTokenResponse.data.response_code;
+    //     console.log(sessionToken)
+    //     console.log(updateSessionTokenResponse)
+    //     return updateSessionTokenResponse.data.response_code;
 
-      } catch (error){
+    //   } catch (error){
           
-        console.log(error)
-        setNoResults(true);
+    //     console.log(error)
+    //     setNoResults(true);
 
-      }
-    };
+    //   }
+    // };
   
     const fetchQuestions  = async () => {
       console.log('in fetch questions')
 
         try {
+          console.log(categoryName)
+          console.log(category)
+          console.log(difficulty)
 
           const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
           return response; 
@@ -283,7 +289,7 @@ const Quiz = (props) => {
 
     }, [sessionToken])
   // }, [sessionToken, tokenChanged])  causes a loop because session token not updating?
-
+console.log(sessionToken)
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
