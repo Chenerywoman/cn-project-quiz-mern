@@ -15,7 +15,6 @@ const Quiz = (props) => {
         sessionToken
     } = props;
     
-    const [noOfQuestions, setNoOfQuestions] = useState(10)
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([false, false, false, false, false, false, false, false, false, false]);
     const [noResults, setNoResults] = useState(false);
@@ -52,10 +51,16 @@ const Quiz = (props) => {
           number = noOfQuestionsResponse.data.category_question_count.total_hard_question_count;
 
         }
-        
-        if (number < 11) {
-          setNoOfQuestions(number)
+
+        let noOfQuestions = 10;
+
+        if (number < 10) {
+  
+          noOfQuestions = number;
+  
         }
+        
+        return noOfQuestions; 
 
         } catch (error) {
           console.log(error)
@@ -64,30 +69,51 @@ const Quiz = (props) => {
           
     }
 
-    const fetchQuestions  = async () => {
+    const fetchQuestions  = async (number) => {
       console.log('in fetch questions')
-      console.log(noOfQuestions)
+      console.log(number)
+        
+      try {
+        console.log(categoryName)
+        console.log(category)
+        console.log(difficulty)
+        console.log(number)
 
-        try {
-          console.log(categoryName)
-          console.log(category)
-          console.log(difficulty)
+        const response = await axios.get(`https://opentdb.com/api.php?amount=${number}&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}&encode=url3986`);
+        console.log(response)
+        return response; 
 
-          const response = await axios.get(`https://opentdb.com/api.php?amount=${noOfQuestions}&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}`);
-          return response; 
+      } catch (error) {
+        console.log(error)
+        history.push('/error')
+      }
 
-        } catch (error) {
-          console.log(error)
-          history.push('/error')
-        }
+    }
+
+
+    const recursiveFetchQuestions = async (number) => {
+
+      console.log('in recursive fetch questions')
+      
+      let nextNumber = number - 1; 
+      const response = await axios.get(`https://opentdb.com/api.php?amount=${number}&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}&encode=url3986`);
+
+      if (response.data.response_code !== 0 ) {
+        
+          return recursiveFetchQuestions(nextNumber);
+
+      } else {
+        
+        return response;
+
+      }
+    
 
     }
 
   const decodeText = (encodedText) => {
   
-    let text = document.createElement('textarea');
-    text.innerHTML = encodedText;
-    let decodedText = text.value;
+    const decodedText = decodeURIComponent(encodedText)
 
     return decodedText;
 
@@ -160,64 +186,66 @@ const Quiz = (props) => {
 
       setIsLoading(true)
 
-
       if (sessionToken) {
 
-          const response = await fetchQuestions();
-        
+        try {
+          const noOfQuestions = await getNoOfQuestions();
+          console.log(noOfQuestions)
+
+          const response = await fetchQuestions(noOfQuestions);
+
           if (response.data && response.data.response_code === 0) {
 
-              let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
-              setQuestions(questionsAndScrambledAnswers);
-              setIsLoading(false)
+            let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
+            setQuestions(questionsAndScrambledAnswers);
+            setIsLoading(false)
 
           } else if (response.data && response.data.response_code === 1) {
 
-              console.log("in response code 1 if ");
-              setNoResults(true);
+            console.log("in response code 1 if ");
+            setNoResults(true);
 
           } else if (response.data && response.data.response_code === 2) {
 
-              console.log("in response code 2 else if");
-              setNoResults(true);
+            console.log("in response code 2 else if");
+            setNoResults(true);
 
           } else if (response.data && response.data.response_code === 3) {
 
-              console.log("in response code 3 else if ");
-              getSessionToken();
+            console.log("in response code 3 else if ");
+            getSessionToken();
 
           } else if (response.data && response.data.response_code === 4) {
 
-              console.log("in response code 4 else if ");
-              const resetTokenResponse = await updateSessionToken();
-           
-              if (resetTokenResponse === 0) {
+            console.log("in response code 4 else if ");
+            const resetTokenResponse = await updateSessionToken();
 
-                const secondResponse = await fetchQuestions();
-                console.log(secondResponse)
-  
-                if (secondResponse.data.response_code === 4) {
-                  setNoResults(true);
-                } else {
-  
-                  let questionsAndScrambledAnswers = scrambledAnswersCallBack(secondResponse.data.results);
-                  setQuestions(questionsAndScrambledAnswers);
-                  setTokenChanged(!tokenChanged)  
-                  setIsLoading(false)
-  
-                }
+            if (resetTokenResponse === 0) {
 
-              } else {
-                setNoResults(true);
-              }
-             
+              const noOfQuestions = await getNoOfQuestions();
 
-          } 
-  
-      } else {
-            getSessionToken();
+              const response = await recursiveFetchQuestions(noOfQuestions);
+
+              let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
+              setQuestions(questionsAndScrambledAnswers);
+              setTokenChanged(!tokenChanged)
+              setIsLoading(false)
+
+            } else {
+              setNoResults(true);
+            }
+
+
+          }
+
+        } catch (error) {
+
         }
-      
+
+      } else {
+        getSessionToken();
+      }
+
     }
 
     const onRadioChange = (answerInd, questionInd, event) => {
@@ -241,12 +269,13 @@ const Quiz = (props) => {
 
       }, 0)
 
-      return allChecked < 10 ? false : true
+      return allChecked < array.length ? false : true
 
     }
 
     const formHandler = async (event) => {
       console.log('in form handler')
+      console.log(questions)
 
       event.preventDefault();
 
@@ -292,9 +321,9 @@ const Quiz = (props) => {
     }
   }
 
-    useEffect(() => {
-      getNoOfQuestions()
-    }, [])
+    // useEffect(() => {
+    //   getNoOfQuestions()
+    // }, [])
 
     useEffect(() => {
 
@@ -304,8 +333,8 @@ const Quiz = (props) => {
   // }, [sessionToken, tokenChanged])  causes a loop because session token not updating?
 
 
-  console.log(noOfQuestions)
-console.log(sessionToken)
+// console.log(sessionToken)
+
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
