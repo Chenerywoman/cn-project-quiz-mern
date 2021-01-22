@@ -134,6 +134,20 @@ app.get('/selection', auth.isLoggedIn, async (req, res) => {
     };
 });
 
+//quiz page - check if logged in
+
+app.get('/quiz', auth.isLoggedIn, (req, res) => {
+    console.log('in get quiz')
+    if(req.userFound) {
+        res.json({
+            message: "Logged in"
+        });
+    } else {
+        console.log('in quiz else')
+        res.json("Not logged in");
+    };
+});
+
 //quiz scores
 app.post('/quiz', auth.isLoggedIn, async (req, res) => {   
     try {

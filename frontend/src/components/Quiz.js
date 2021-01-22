@@ -25,10 +25,20 @@ const Quiz = (props) => {
 
     const history = useHistory();
 
-    const getTimeTaken = useCallback((time) => {
+    const checkIfLoggedIn = async () => {
 
-        setTimeTaken(time);
-      }, [])
+      const response = await axios.get('/quiz');
+      console.log(response)
+      if(response.data === "Not logged in") {
+
+          history.push('/');
+      };
+  };
+
+    // const getTimeTaken = useCallback((time) => {
+
+    //     setTimeTaken(time);
+    //   }, [])
 
     const getNoOfQuestions = async () => {
 
@@ -248,6 +258,11 @@ const Quiz = (props) => {
 
     }
 
+    const getTimeTaken = useCallback((time) => {
+
+      setTimeTaken(time);
+    }, [])
+
     const onRadioChange = (answerInd, questionInd, event) => {
 
       let correctOrIncorrect = questions[questionInd].answers[answerInd].correct;
@@ -322,11 +337,11 @@ const Quiz = (props) => {
   }
 
     // useEffect(() => {
-    //   getNoOfQuestions()
+    //   checkIfLoggedIn()
     // }, [])
 
     useEffect(() => {
-
+      checkIfLoggedIn()
       getAndPrepareQuiz()
 
     }, [sessionToken])
