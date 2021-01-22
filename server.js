@@ -97,8 +97,6 @@ app.post('/login', auth.isLoggedIn, async (req, res) => {
                 expiresIn: process.env.JWT_EXPIRES_IN
             }); 
             
-            console.log(token);
-
             const cookieOptions = {
                 expires: new Date(
                     Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000
@@ -137,16 +135,7 @@ app.get('/selection', auth.isLoggedIn, async (req, res) => {
 });
 
 //quiz scores
-app.post('/quiz', auth.isLoggedIn, async (req, res) => {
-    console.log("reaching backend"); //checking data is received on backend
-    console.log(req.body.score);
-    console.log(req.body.time);
-    console.log(req.body.category);
-    console.log(req.body.difficulty);
-    console.log(req.userFound._id);
-    console.log('req.userFound')
-    console.log(req.userFound)
-    
+app.post('/quiz', auth.isLoggedIn, async (req, res) => {   
     try {
 
         if (req.userFound) {
@@ -168,7 +157,6 @@ app.post('/quiz', auth.isLoggedIn, async (req, res) => {
             res.json({
                 message: "not logged-in"
             });
-    
         }
 
     } catch (error) {
@@ -180,11 +168,35 @@ app.post('/quiz', auth.isLoggedIn, async (req, res) => {
 //Pull data for Profile Component
 app.get('/profile', auth.isLoggedIn, async (req, res) => {
     if(req.userFound) {
-        console.log("found")
-    
-    try{    
+        console.log("found");
+        //rankings not working
+    try{   
+        // const tableInfo = await Result.find(); //DB pull for results info
+
+        // tableInfo.sort(function (result1, result2) {
+        //     if (result1.score > result2.score) return -1;
+        //     if (result2.score > result1.score) return 1;
+        //     if (result1.score === result2.score) {
+        //         if (result1.time > result2.time) return 1;
+        //         if (result2.time > result1.time) return -1;
+        //     };
+        // });
+        // let ranking = 0;
+        // let topTen = false;
+        // for (let i = 0; i < tableInfo.length; i++) {
+        //     if (tableInfo[i].user === req.userFound._id && ranking === 0 ) {
+        //         console.log(tableInfo[i].user);
+        //         console.log(req.userFound._id);
+        //         console.log(i)
+        //         ranking = i + 1;
+        //     }
+        //     if (ranking <= 10) {
+        //         topTen = true; 
+        //     };
+        //     console.log(ranking);
+        // };
+        
         const resultInfo = await Result.find({ user: req.userFound._id });
-        console.log(resultInfo);
 
         //stat calculation
         const quizzes = resultInfo.length;
@@ -226,7 +238,6 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
         const aveTime = aveMS3.slice(19, 24);
 
         let difficulty = resultInfo[resultInfo.length - 1].difficulty;
-        console.log(difficulty);
         let difficultyCap;
         switch (difficulty) {
             case "easy":
@@ -253,8 +264,8 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
                     AvScore: aveScore,
                     fastTime: resultInfo[fastestPos].time,
                     avTime: aveTime,
-                    // position: "1st",
-                    // topPosition: "1st", //needs an if but hard-coded for now
+                    position: ranking,
+                    topPosition: topTen, 
                     score: resultInfo[resultInfo.length - 1].score,
                     time: resultInfo[resultInfo.length - 1].time,
                     category: resultInfo[resultInfo.length - 1].category,
@@ -286,7 +297,6 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
         );
     }
     } else {
-        console.log("not found")
         res.json({ //sending message to front-end
             message: "user not found"
         });
