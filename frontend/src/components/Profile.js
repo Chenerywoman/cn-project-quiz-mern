@@ -65,8 +65,8 @@ const Profile = () => {
                         <h5>Average Time: </h5>
                         <p>{result.avTime}</p>
 
-                        {/* <h5>Ranking: </h5>
-                        <p>{result.position}</p> */}
+                        <h5>Ranking: </h5>
+                        <p>{result.position}</p>
                     </div>    
                 </div>
 
