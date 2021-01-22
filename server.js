@@ -168,34 +168,32 @@ app.post('/quiz', auth.isLoggedIn, async (req, res) => {
 //Pull data for Profile Component
 app.get('/profile', auth.isLoggedIn, async (req, res) => {
     if(req.userFound) {
-        console.log("found");
-        //rankings not working
-    try{   
-        // const tableInfo = await Result.find(); //DB pull for results info
 
-        // tableInfo.sort(function (result1, result2) {
-        //     if (result1.score > result2.score) return -1;
-        //     if (result2.score > result1.score) return 1;
-        //     if (result1.score === result2.score) {
-        //         if (result1.time > result2.time) return 1;
-        //         if (result2.time > result1.time) return -1;
-        //     };
-        // });
-        // let ranking = 0;
-        // let topTen = false;
-        // for (let i = 0; i < tableInfo.length; i++) {
-        //     if (tableInfo[i].user === req.userFound._id && ranking === 0 ) {
-        //         console.log(tableInfo[i].user);
-        //         console.log(req.userFound._id);
-        //         console.log(i)
-        //         ranking = i + 1;
-        //     }
-        //     if (ranking <= 10) {
-        //         topTen = true; 
-        //     };
-        //     console.log(ranking);
-        // };
-        
+    try{   
+        const tableInfo = await Result.find(); //DB pull for all results info
+
+        tableInfo.sort(function (result1, result2) { //sorting - working
+            if (result1.score > result2.score) return -1;
+            if (result2.score > result1.score) return 1;
+            if (result1.score === result2.score) {
+                if (result1.time > result2.time) return 1;
+                if (result2.time > result1.time) return -1;
+            };
+        });
+        let ranking = 0;
+        let topTen = false;
+
+        let id2 = req.userFound._id.toString();
+        for (let i = 0; i < tableInfo.length; i++) {
+            let id1 = tableInfo[i].user.toString();
+            if (id1 == id2 && ranking == 0 ) { //ranking == 0 works and ranking is then updated
+                ranking = i + 1;
+            }
+        };
+        if (ranking <= 10) { //working
+            topTen = true; 
+        };
+
         const resultInfo = await Result.find({ user: req.userFound._id });
 
         //stat calculation

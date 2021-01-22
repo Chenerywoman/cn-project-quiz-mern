@@ -30,6 +30,15 @@ const Profile = () => {
         };
     };
 
+    const rankingCheck = () => {
+        if (result.topPosition) {
+            return <div class="sections" id="leaderboard-info">
+                    <h2>Congratulations!</h2>
+                    <h5>You are {result.topPosition} on the Leaderboard</h5>
+                </div>
+        }
+    }
+
     return (
         <div class="page" id="profile" >
             <h1 id="profile-head" >Profile Page</h1>
@@ -71,14 +80,8 @@ const Profile = () => {
                 </div>
 
                 <div id="right-side" >
-                    {//<div class="sections" id="leaderboard-info">{/*Require if statement*/}
-                    }
-                        {//<h2>Congratulations!</h2>
-                        }
-                        {//<h5>You are {result.topPosition} on the Leaderboard</h5>
-                        }
-                    {//</div>}  
-                    }
+                    { rankingCheck() }
+                    
 
                     <div class="sections" id="last-quiz-info">
                         <h3 class="profile" >The Results of Your Last Quiz are:</h3>

@@ -300,6 +300,25 @@ input .login, input .register {
   margin-top: 2rem;
 }
 
+#leaderboard-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: unset;
+  border: none;
+  text-align: center;
+}
+
+#leaderboard-info h2{
+  font-family: 'Russo One', sans-serif;
+  font-size: 4rem;
+}
+
+#leaderboard-info h5{
+  font-size: 1.8rem;
+}
+
 @media screen and (max-width: 768px) {
   nav {
     justify-content: center;
@@ -454,6 +473,12 @@ input .login, input .register {
     font-size: 0.7rem;
   }
   label {
+    font-size: 1rem;
+  }
+  #leaderboard-info h2{
+    font-size: 2rem;
+  }
+  #leaderboard-info h5{
     font-size: 1rem;
   }
 }
