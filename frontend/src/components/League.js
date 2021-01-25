@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import axios from 'axios';
 
 const League = () => {
@@ -6,11 +6,7 @@ const League = () => {
     const [topTen, setTopTen] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        fetchData()
-    }, []);
-
-    const fetchData = async () => {
+    const fetchData = useCallback (async () => {
         setIsLoading(true);
         const response = await axios.get('/league');
 
@@ -35,40 +31,47 @@ const League = () => {
                 case "hard":
                     difficultyCap = "Hard";
                     break;
+                default:
+                    difficultyCap = "";
             };
             newArr[i].difficulty = difficultyCap;
         }
         setTopTen(newArr);
         setIsLoading(false);
-    };
+    }, [rows]);
+
+    useEffect(() => {
+        fetchData()
+    }, [fetchData]);
 
     return (
-        <div class="page" id="league" >
+        <div className="page" id="league" >
             <h3>League Table</h3>
             <h1 id="top10" >Top 10</h1>
             {isLoading ? <p>...loading</p> : 
             <table id="table" >
+                <tbody>
                 <tr>
-                    <th class="header" >Position</th>
-                    <th class="header" >Score</th>
-                    <th class="header" >Time</th>
-                    <th class="header" >User</th>
-                    <th class="header" >Category</th>
-                    <th class="header" >Difficulty</th>
+                    <th className="header" >Position</th>
+                    <th className="header" >Score</th>
+                    <th className="header" >Time</th>
+                    <th className="header" >User</th>
+                    <th className="header" >Category</th>
+                    <th className="header" >Difficulty</th>
                 </tr>
-                {topTen.map((topTen) => {
+                {topTen.map((topTen, ind) => {
                     return (
-                        <tr>
-                            <td class="data" id="position" >{topTen.position}</td>
-                            <td class="data" >{topTen.score}</td>
-                            <td class="data" >{topTen.time}</td>
-                            <td class="data" >{topTen.user.name}</td>
-                            <td class="data" >{topTen.category}</td>
-                            <td class="data" >{topTen.difficulty}</td>
+                        <tr key={ind}>
+                            <td className="data" id="position" >{topTen.position}</td>
+                            <td className="data" >{topTen.score}</td>
+                            <td className="data" >{topTen.time}</td>
+                            <td className="data" >{topTen.user.name}</td>
+                            <td className="data" >{topTen.category}</td>
+                            <td className="data" >{topTen.difficulty}</td>
                         </tr>
                     )
                 } )}
-                
+                </tbody>
             </table>
             }
         </div>
