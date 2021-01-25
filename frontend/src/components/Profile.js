@@ -32,7 +32,7 @@ const Profile = () => {
 
     const rankingCheck = () => {
         if (result.topPosition) {
-            return <div class="sections" id="leaderboard-info">
+            return <div className="sections" id="leaderboard-info">
                     <h2>Congratulations!</h2>
                     <h5>You are {result.topPosition} on the Leaderboard</h5>
                 </div>
