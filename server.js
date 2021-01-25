@@ -25,7 +25,9 @@ mongoose.connect( process.env.DB_URL, {
     useCreateIndex: true,
     useFindAndModify: false,
     useUnifiedTopology: true
-}).then( () => console.log('MongoDB is Connected')); 
+}).then( () => console.log('MongoDB is Connected')).catch( (error) => {
+    console.log(error);
+}); 
 
 //home page
 app.get('/', (req, res) => {
