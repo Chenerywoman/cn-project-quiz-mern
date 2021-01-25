@@ -28,8 +28,13 @@ function App() {
 
   const getSessionToken = async () => {  
     console.log('in get session token') 
-    const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
-    setSessionToken(sessionTokenResponse.data.token);
+    try {
+        const sessionTokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
+        setSessionToken(sessionTokenResponse.data.token);
+    } catch (error){
+      console.log(error)
+      history.push('/error')
+    }
   };
 
   const updateSessionToken = async () => {
@@ -44,10 +49,8 @@ function App() {
       return updateSessionTokenResponse.data.response_code;
 
     } catch (error){
-        
       console.log(error)
-      // setNoResults(true);
-
+      history.push('/error')
     }
   };
 
@@ -75,7 +78,7 @@ function App() {
 
   }
 
-  const fetchCategories = async () => {
+  const fetchCategories =  useCallback(async () => {
       
     try {
         const categories = await axios.get('https://opentdb.com/api_category.php');
@@ -87,14 +90,13 @@ function App() {
         history.push('/error')
     }
 
-  }
+  }, [history]) 
       
 
     useEffect(() => {
         fetchCategories();
-    }, [])
+    }, [fetchCategories])
 
-   console.log(categories) 
   return (
     <BrowserRouter>
       <Nav />
