@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser'); //needs to be initialised
 const auth = require('./middleware/auth');
+const path = require('path');
 
 dotenv.config( { path: './.env' } );
 
@@ -17,6 +18,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json({extended: false}));
 app.use(cors());
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'frontend/build')));
 
 mongoose.connect( process.env.DB_URL, { 
     useNewUrlParser: true,
@@ -343,6 +345,10 @@ app.get('/logout', auth.logout, (req, res) => {
         message: "Logged Out"
     });
 });
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname+'/client/build/index.html'));
+  });
 
 app.listen(5000, () => { 
     console.log('server is running on port 5000');
