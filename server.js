@@ -185,139 +185,147 @@ app.post('/quiz', auth.isLoggedIn, async (req, res) => {
 
 //Pull data for Profile Component
 app.get('/profile', auth.isLoggedIn, async (req, res) => {
-    if(req.userFound) {
+    console.log("backend reached");
+    try{
+        if(req.userFound) {
+            console.log("going the wrong way")
+        try{   
+            const tableInfo = await Result.find(); //DB pull for all results info
 
-    try{   
-        const tableInfo = await Result.find(); //DB pull for all results info
+            tableInfo.sort(function (result1, result2) { //sorting - working
+                if (result1.score > result2.score) return -1;
+                if (result2.score > result1.score) return 1;
+                if (result1.score === result2.score) {
+                    if (result1.time > result2.time) return 1;
+                    if (result2.time > result1.time) return -1;
+                };
+            });
+            let ranking = 0;
+            let topTen = false;
 
-        tableInfo.sort(function (result1, result2) { //sorting - working
-            if (result1.score > result2.score) return -1;
-            if (result2.score > result1.score) return 1;
-            if (result1.score === result2.score) {
-                if (result1.time > result2.time) return 1;
-                if (result2.time > result1.time) return -1;
+            let id2 = req.userFound._id.toString();
+            for (let i = 0; i < tableInfo.length; i++) {
+                let id1 = tableInfo[i].user.toString();
+                if (id1 == id2 && ranking == 0 ) { //ranking == 0 works and ranking is then updated
+                    ranking = i + 1;
+                }
             };
-        });
-        let ranking = 0;
-        let topTen = false;
+            if (ranking <= 10) { //working
+                topTen = true; 
+            };
 
-        let id2 = req.userFound._id.toString();
-        for (let i = 0; i < tableInfo.length; i++) {
-            let id1 = tableInfo[i].user.toString();
-            if (id1 == id2 && ranking == 0 ) { //ranking == 0 works and ranking is then updated
-                ranking = i + 1;
-            }
-        };
-        if (ranking <= 10) { //working
-            topTen = true; 
-        };
+            const resultInfo = await Result.find({ user: req.userFound._id });
 
-        const resultInfo = await Result.find({ user: req.userFound._id });
+            //stat calculation
+            const quizzes = resultInfo.length;
+            let totScores = 0;
+            let times = [];
+            for(let i = 0; i < resultInfo.length; i++) {
+                totScores += resultInfo[i].score; 
+                times.push(resultInfo[i].time); //need to convert from str
+            };
+            const aveScore =  Math.round(totScores/quizzes);
 
-        //stat calculation
-        const quizzes = resultInfo.length;
-        let totScores = 0;
-        let times = [];
-        for(let i = 0; i < resultInfo.length; i++) {
-            totScores += resultInfo[i].score; 
-            times.push(resultInfo[i].time); //need to convert from str
-        };
-        const aveScore =  Math.round(totScores/quizzes);
+            //convert times from string
+            let newArr = [];
+            let fastest = [];
+            let fastestPos = 0;
+            let totTime = 0;
 
-        //convert times from string
-        let newArr = [];
-        let fastest = [];
-        let fastestPos = 0;
-        let totTime = 0;
+        //Probably need to build in if takes 10 mins or longer
+            for(let i = 0; i < times.length; i++) {
+                let hms = "01:" + times[i]; //gives hours:minutes:seconds +1hour otherwise it won't work
+                let fullTime = new Date("1970-01-01T" + hms); //gives full date and time including date of 1/1/70 to allow you to extract time as milliseconds
 
-    //Probably need to build in if takes 10 mins or longer
-        for(let i = 0; i < times.length; i++) {
-            let hms = "01:" + times[i]; //gives hours:minutes:seconds +1hour otherwise it won't work
-            let fullTime = new Date("1970-01-01T" + hms); //gives full date and time including date of 1/1/70 to allow you to extract time as milliseconds
+                timeMS = fullTime.getTime(); //extracts time in milliseconds
+                newArr.push(timeMS); //pushes ms to an array
+                totTime += timeMS;
 
-            timeMS = fullTime.getTime(); //extracts time in milliseconds
-            newArr.push(timeMS); //pushes ms to an array
-            totTime += timeMS;
-
-            if (fastest.length === 0) { //fastest starts as empty array
-                fastest.push(timeMS);
-            } else if (fastest[0] > timeMS) {
-                fastest.push(timeMS);
-                fastest.shift();
-                fastestPos = [i];
-            }
-        };
-        
-        const aveMS = totTime / resultInfo.length; //converting fastest in ms to useable string
-        const aveMS2 = new Date(aveMS);
-        const aveMS3 = aveMS2.toString();
-        const aveTime = aveMS3.slice(19, 24);
-
-        let difficulty = resultInfo[resultInfo.length - 1].difficulty;
-        let difficultyCap;
-        switch (difficulty) {
-            case "easy":
-                difficultyCap = "Easy";
-                break;
-            case "medium":
-                difficultyCap = "Medium";
-                break;
-            case "hard":
-                difficultyCap = "Hard";
-                break;
-        };
-
-        res.json({
-            users:
-                {
-                    name: req.userFound.name,
-                    email: req.userFound.email,
-                },
-            results:
-                {
-                    totalQuiz: quizzes,
-                    totalScore: totScores,
-                    AvScore: aveScore,
-                    fastTime: resultInfo[fastestPos].time,
-                    avTime: aveTime,
-                    position: ranking,
-                    topPosition: topTen, 
-                    score: resultInfo[resultInfo.length - 1].score,
-                    time: resultInfo[resultInfo.length - 1].time,
-                    category: resultInfo[resultInfo.length - 1].category,
-                    difficulty: difficultyCap
+                if (fastest.length === 0) { //fastest starts as empty array
+                    fastest.push(timeMS);
+                } else if (fastest[0] > timeMS) {
+                    fastest.push(timeMS);
+                    fastest.shift();
+                    fastestPos = [i];
                 }
-            }
-        );
-        
+            };
+            
+            const aveMS = totTime / resultInfo.length; //converting fastest in ms to useable string
+            const aveMS2 = new Date(aveMS);
+            const aveMS3 = aveMS2.toString();
+            const aveTime = aveMS3.slice(19, 24);
+
+            let difficulty = resultInfo[resultInfo.length - 1].difficulty;
+            let difficultyCap;
+            switch (difficulty) {
+                case "easy":
+                    difficultyCap = "Easy";
+                    break;
+                case "medium":
+                    difficultyCap = "Medium";
+                    break;
+                case "hard":
+                    difficultyCap = "Hard";
+                    break;
+            };
+
+            res.json({
+                users:
+                    {
+                        name: req.userFound.name,
+                        email: req.userFound.email,
+                    },
+                results:
+                    {
+                        totalQuiz: quizzes,
+                        totalScore: totScores,
+                        AvScore: aveScore,
+                        fastTime: resultInfo[fastestPos].time,
+                        avTime: aveTime,
+                        position: ranking,
+                        topPosition: topTen, 
+                        score: resultInfo[resultInfo.length - 1].score,
+                        time: resultInfo[resultInfo.length - 1].time,
+                        category: resultInfo[resultInfo.length - 1].category,
+                        difficulty: difficultyCap
+                    }
+                }
+            );
+            
+        } catch(error) {
+            res.json({
+                users:
+                    {
+                        name: req.userFound.name,
+                        email: req.userFound.email,
+                    },
+                results:
+                    {
+                        totalQuiz: 0,
+                        totalScore: 0,
+                        AvScore: 0,
+                        fastTime: 0,
+                        avTime: 0,
+                        score: 0,
+                        time: 0,
+                        category: 0,
+                        difficulty: 0
+                    }
+                }
+            );
+        }
+        } else {
+            console.log("user not found");
+            res.json({ //sending message to front-end
+                message: "user not found"
+            });
+        };
     } catch(error) {
-        res.json({
-            users:
-                {
-                    name: req.userFound.name,
-                    email: req.userFound.email,
-                },
-            results:
-                {
-                    totalQuiz: 0,
-                    totalScore: 0,
-                    AvScore: 0,
-                    fastTime: 0,
-                    avTime: 0,
-                    score: 0,
-                    time: 0,
-                    category: 0,
-                    difficulty: 0
-                }
-            }
-        );
-    }
-    } else {
+        console.log("user not found");
         res.json({ //sending message to front-end
             message: "user not found"
         });
-    };
-    
+    }
 });
 
 //Pull data for League Component

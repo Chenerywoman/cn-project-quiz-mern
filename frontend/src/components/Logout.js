@@ -7,6 +7,8 @@ const Logout = () => {
         fetchData();
     }, []);
 
+    const history = useHistory();
+
     const fetchData = async () => {
         
         const response = await axios.get('/logout');
@@ -16,9 +18,6 @@ const Logout = () => {
             history.push('/');
         };
     };
-
-    const history = useHistory();
-
 
     return (
         <div id="logout" >
