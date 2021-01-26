@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
@@ -8,13 +8,9 @@ const Profile = () => {
     const [result, setResult] = useState({});
     const [isLoading, setIsLoading] = useState(false);
   
-    useEffect(() => {
-        fetchData();
-    }, []);
-
     const history = useHistory();
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setIsLoading(true);
         
         const response = await axios.get('/profile');
@@ -27,11 +23,15 @@ const Profile = () => {
             setResult(response.data.results);
             setIsLoading(false);
         };
-    };
+    }, [history]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const rankingCheck = () => {
         if (result.topPosition) {
-            return <div class="sections" id="leaderboard-info">
+            return <div className="sections" id="leaderboard-info">
                     <h2>Congratulations!</h2>
                     <h5>You are {result.topPosition} on the Leaderboard</h5>
                 </div>
@@ -39,14 +39,14 @@ const Profile = () => {
     }
 
     return (
-        <div class="page" id="profile" >
+        <div className="page" id="profile" >
             <h1 id="profile-head" >Profile Page</h1>
 
             {isLoading ? <p>...loading</p> : 
             <div id="profile-body" >
                 <div id="left-side" >
-                    <div class="sections" id="personal-info">
-                        <h3 class="profile" >Your Information</h3>
+                    <div className="sections" id="personal-info">
+                        <h3 className="profile" >Your Information</h3>
 
                         <h5>Name: </h5>
                         <p>{user.name}</p>
@@ -55,8 +55,8 @@ const Profile = () => {
                         <p>{user.email}</p>
                     </div>  
 
-                    <div class="sections" id="stats-info">
-                        <h3 class="profile" >Your Stats</h3>
+                    <div className="sections" id="stats-info">
+                        <h3 className="profile" >Your Stats</h3>
 
                         <h5>Quizzes Taken</h5>
                         <p>{result.totalQuiz}</p>
@@ -82,8 +82,8 @@ const Profile = () => {
                     { rankingCheck() }
                     
 
-                    <div class="sections" id="last-quiz-info">
-                        <h3 class="profile" >The Results of Your Last Quiz are:</h3>
+                    <div className="sections" id="last-quiz-info">
+                        <h3 className="profile" >The Results of Your Last Quiz are:</h3>
 
                         <h5>Score: </h5>
                         <p>{result.score}</p>

@@ -1,8 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {Link, useHistory} from 'react-router-dom';
 import axios from 'axios';
 
 const Selection = (props) => {
+
+    const history = useHistory();
     
     const {
         updateCategory, 
@@ -14,11 +16,7 @@ const Selection = (props) => {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
+    const fetchData = useCallback (async () => {
         setIsLoading(true);
         const response = await axios.get('/selection');
         console.log(response.data.message)
@@ -27,9 +25,11 @@ const Selection = (props) => {
             history.push('/login');
         };
         setIsLoading(false);
-    };
+    },[history]);
 
-    const history = useHistory();
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const formHandler = async (event) => {
         setIsLoading(true);
@@ -50,7 +50,7 @@ const Selection = (props) => {
 
 console.log(categories)
     return (
-        <div class="page" id="selection" >
+        <div className="page" id="selection" >
             <h1 id="select-head" >Select Your Quiz</h1>
 
             {isLoading ? <p>...loading</p> : 

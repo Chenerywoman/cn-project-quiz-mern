@@ -25,7 +25,7 @@ const Quiz = (props) => {
 
     const history = useHistory();
 
-    const checkIfLoggedIn = async () => {
+    const checkIfLoggedIn = useCallback(async () => {
 
       const response = await axios.get('/quiz');
       console.log(response)
@@ -33,14 +33,9 @@ const Quiz = (props) => {
 
           history.push('/');
       };
-  };
+  }, [history]);
 
-    // const getTimeTaken = useCallback((time) => {
-
-    //     setTimeTaken(time);
-    //   }, [])
-
-    const getNoOfQuestions = async () => {
+    const getNoOfQuestions = useCallback(async () => {
 
       let number = 0;
 
@@ -77,9 +72,9 @@ const Quiz = (props) => {
         
         }
           
-    }
+    }, [category, difficulty])
 
-    const fetchQuestions  = async (number) => {
+    const fetchQuestions  = useCallback(async (number) => {
       console.log('in fetch questions')
       console.log(number)
         
@@ -98,10 +93,10 @@ const Quiz = (props) => {
         history.push('/error')
       }
 
-    }
+    }, [category, difficulty, categoryName, history, sessionToken])
 
 
-    const recursiveFetchQuestions = async (number) => {
+    const recursiveFetchQuestions = useCallback(async (number) => {
 
       console.log('in recursive fetch questions')
       
@@ -109,8 +104,11 @@ const Quiz = (props) => {
       const response = await axios.get(`https://opentdb.com/api.php?amount=${number}&category=${category}&difficulty=${difficulty}&type=multiple&token=${sessionToken}&encode=url3986`);
 
       if (response.data.response_code !== 0 ) {
-        
-          return recursiveFetchQuestions(nextNumber);
+
+          if (nextNumber > 0) {
+
+            return recursiveFetchQuestions(nextNumber);
+          }
 
       } else {
         
@@ -119,7 +117,7 @@ const Quiz = (props) => {
       }
     
 
-    }
+    },[category, difficulty, sessionToken])
 
   const decodeText = (encodedText) => {
   
@@ -179,20 +177,7 @@ const Quiz = (props) => {
       []
     )
 
-         //inside useEffect
-  //const questions = fetchQuestions() (in any case)
-      //Happy path
-      // store questions in state
-      //Sad path
-      // response === 3
-      // getSessionToken()
-      // response === 4
-      // refreshToken()
-      //const questions = fetchQuestions()      
-      //store questions in state
-//[sessionToken]
-
-    const getAndPrepareQuiz = async () => {
+    const getAndPrepareQuiz = useCallback (async () => {
 
       setIsLoading(true)
 
@@ -232,14 +217,21 @@ const Quiz = (props) => {
 
             if (resetTokenResponse === 0) {
 
-              const noOfQuestions = await getNoOfQuestions();
+              try {
 
-              const response = await recursiveFetchQuestions(noOfQuestions);
+                  const noOfQuestions = await getNoOfQuestions();
 
-              let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
-              setQuestions(questionsAndScrambledAnswers);
-              setTokenChanged(!tokenChanged)
-              setIsLoading(false)
+                  const response = await recursiveFetchQuestions(noOfQuestions);
+
+                  let questionsAndScrambledAnswers = scrambledAnswersCallBack(response.data.results);
+                  setQuestions(questionsAndScrambledAnswers);
+                  setTokenChanged(tokenChanged => !tokenChanged)
+                  setIsLoading(false)
+
+              } catch (error){
+                console.log(error)
+                setNoResults(true);
+              }
 
             } else {
               setNoResults(true);
@@ -249,6 +241,8 @@ const Quiz = (props) => {
           }
 
         } catch (error) {
+          console.log(error)
+          setNoResults(true);
 
         }
 
@@ -256,7 +250,7 @@ const Quiz = (props) => {
         getSessionToken();
       }
 
-    }
+    }, [fetchQuestions, getNoOfQuestions, getSessionToken, recursiveFetchQuestions, scrambledAnswersCallBack, sessionToken, updateSessionToken])
 
     const getTimeTaken = useCallback((time) => {
 
@@ -336,25 +330,17 @@ const Quiz = (props) => {
     }
   }
 
-    // useEffect(() => {
-    //   checkIfLoggedIn()
-    // }, [])
-
     useEffect(() => {
       checkIfLoggedIn()
       getAndPrepareQuiz()
 
-    }, [sessionToken])
-  // }, [sessionToken, tokenChanged])  causes a loop because session token not updating?
-
-
-// console.log(sessionToken)
+    }, [checkIfLoggedIn, getAndPrepareQuiz])
 
       if (noResults) {
         return <Redirect to = "/error" / >
       } 
   return (
-    <div class="page" id="quiz" >
+    <div className="page" id="quiz" >
       <h1 id="quiz-head" >Quiz Page</h1>
       {isLoading ? <p>...loading</p> : 
       <div>

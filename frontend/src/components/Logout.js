@@ -1,15 +1,12 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
 const Logout = () => {
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     const history = useHistory();
-
-    const fetchData = async () => {
+    
+    const fetchData = useCallback(async () => {
         
         const response = await axios.get('/logout');
         console.log(response.data.message)
@@ -17,7 +14,11 @@ const Logout = () => {
             console.log("Redirecting")
             history.push('/');
         };
-    };
+    }, [history]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     return (
         <div id="logout" >

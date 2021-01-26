@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
@@ -7,12 +7,9 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [backendResponse, setBackendResponse] = useState("");
 
+    const history = useHistory();
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
 
         const response = await axios.get('/login');
 
@@ -20,9 +17,11 @@ const Login = () => {
 
             history.push('/profile');
         };
-    };
+    }, [history]);
 
-    const history = useHistory();
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const formHandler = async (event) => {
         event.preventDefault();
@@ -54,17 +53,17 @@ const Login = () => {
     };
 
     return (
-        <div class="page" id="login" >
+        <div className="page" id="login" >
 
             <h1 id="login-head" >Login</h1>
 
             <form onSubmit={formHandler} >
                 <div>
                     <label>User Email</label> <br />
-                    <input required class="login" type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
+                    <input required className="login" type="email" name="userEmail" onChange={(e) => setEmail(e.target.value)} /><br />
 
                     <label>User Password</label> <br />
-                    <input required class="login" type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
+                    <input required className="login" type="password" name="userPassword" onChange={(e) => setPassword(e.target.value)} /><br />
                 </div>
 
                 <button id="login-submit" type="submit" >Login</button>
