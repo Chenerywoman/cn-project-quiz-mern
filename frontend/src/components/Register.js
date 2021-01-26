@@ -26,18 +26,12 @@ const Register = () => {
     const formHandler = async (event) => {
         event.preventDefault();
 
-        console.log(name);
-        console.log(email);
-        console.log(password);
-
         const body = {
             userName: name,
             userEmail: email,
             userPassword: password,
             confPassword: conf
         };
-
-        console.log(body);
 
         const config = {
             headers: {
@@ -48,7 +42,6 @@ const Register = () => {
         const response = await axios.post('/register', body, config);
 
         setBackendResponse(response.data.message);
-        console.log(response.data.message);
 
         if(response.data.message === "User registered") {
             history.push('/login'); //change to login
