@@ -6,7 +6,7 @@ import axios from 'axios';
 const Profile = () => {
     const [user, setUser] = useState({});
     const [result, setResult] = useState({});
-    // const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
   
     useEffect(() => {
         fetchData();
@@ -15,17 +15,17 @@ const Profile = () => {
     const history = useHistory();
 
     const fetchData = async () => {
-        // setIsLoading(true);
+        setIsLoading(true);
         
         const response = await axios.get('/profile');
 
         if(response.data.message === "user not found" || response.data.message === "login not found" ) {
-            // setIsLoading(false);
+            setIsLoading(false);
             history.push('/login');
         } else {
             setUser(response.data.users);
             setResult(response.data.results);
-            // setIsLoading(false);
+            setIsLoading(false);
         };
     };
 
@@ -42,7 +42,7 @@ const Profile = () => {
         <div class="page" id="profile" >
             <h1 id="profile-head" >Profile Page</h1>
 
-            {/* {isLoading ? <p>...loading</p> :  */}
+            {isLoading ? <p>...loading</p> : 
             <div id="profile-body" >
                 <div id="left-side" >
                     <div class="sections" id="personal-info">
@@ -99,7 +99,7 @@ const Profile = () => {
                     </div>   
                 </div>
             </div>
-            {/* } */}
+            }
 
         </div>
     )
