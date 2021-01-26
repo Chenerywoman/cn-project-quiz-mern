@@ -20,7 +20,6 @@ const Logout = () => {
         fetchData();
     }, [fetchData]);
 
-
     return (
         <div id="logout" >
             <p>You are logged out.</p>

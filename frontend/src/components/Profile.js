@@ -14,7 +14,6 @@ const Profile = () => {
         setIsLoading(true);
         
         const response = await axios.get('/profile');
-        console.log(response.data.message);
 
         if(response.data.message === "user not found" || response.data.message === "login not found" ) {
             setIsLoading(false);

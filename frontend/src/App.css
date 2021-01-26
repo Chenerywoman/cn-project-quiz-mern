@@ -9,6 +9,7 @@ main font-family: 'Roboto', sans-serif; */
 
 body {
   background-color: #BBBAC6;
+  background-image: url('./assets/0-8123_white-sparkle-png.png');
   color: #1C0F13;
   font-family: 'Roboto', sans-serif;
 }

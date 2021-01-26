@@ -141,13 +141,11 @@ app.get('/selection', auth.isLoggedIn, async (req, res) => {
 //quiz page - check if logged in
 
 app.get('/quiz', auth.isLoggedIn, (req, res) => {
-    console.log('in get quiz')
     if(req.userFound) {
         res.json({
             message: "Logged in"
         });
     } else {
-        console.log('in quiz else')
         res.json("Not logged in");
     };
 });
@@ -186,7 +184,6 @@ app.post('/quiz', auth.isLoggedIn, async (req, res) => {
 //Pull data for Profile Component
 app.get('/profile', auth.isLoggedIn, async (req, res) => {
     if(req.userFound) {
-
     try{   
         const tableInfo = await Result.find(); //DB pull for all results info
 
@@ -317,7 +314,6 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
             message: "user not found"
         });
     };
-    
 });
 
 //Pull data for League Component
@@ -333,7 +329,6 @@ app.get('/league', async (req, res) => {
         };
     });
     const topTen = resultInfo.slice(0, 10);
-    console.log(topTen);
     
     res.json({
         results: topTen
@@ -349,7 +344,7 @@ app.get('/logout', auth.logout, (req, res) => {
 });
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname+'/client/build/index.html'));
+    res.sendFile(path.join(__dirname+'/frontend/build/index.html'));
   });
 
 const port = process.env.PORT || 5000;
