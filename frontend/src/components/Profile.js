@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useCallback} from 'react';
-import {useHistory} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import axios from 'axios';
 
 
@@ -46,7 +46,7 @@ const Profile = () => {
             <div id="profile-body" >
                 <div id="left-side" >
                     <div className="sections" id="personal-info">
-                        <h3 className="profile" >Your Information</h3>
+                        <h3 className="profile" >Your Information:</h3>
 
                         <h5>Name: </h5>
                         <p>{user.name}</p>
@@ -56,7 +56,7 @@ const Profile = () => {
                     </div>  
 
                     <div className="sections" id="stats-info">
-                        <h3 className="profile" >Your Stats</h3>
+                        <h3 className="profile" >Your Stats:</h3>
 
                         <h5>Quizzes Taken</h5>
                         <p>{result.totalQuiz}</p>
@@ -97,6 +97,10 @@ const Profile = () => {
                         <h5>The Difficulty you chose was: </h5>
                         <p>{result.difficulty}</p>
                     </div>   
+                    <div id="buttons">
+                        <Link to="/edit" ><button class="profile-buttons" type="submit" >Edit Profile</button></Link>
+                        <Link to="/delete" ><button class="profile-buttons" type="submit" >Delete Profile</button></Link>
+                    </div>
                 </div>
             </div>
             }

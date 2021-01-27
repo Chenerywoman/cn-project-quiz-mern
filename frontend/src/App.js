@@ -8,6 +8,9 @@ import Login from './components/Login';
 import Selection from './components/Selection';
 import Quiz from './components/Quiz';
 import Profile from './components/Profile';
+import Edit from './components/Edit';
+import Password from './components/Password';
+import Delete from './components/Delete';
 import League from './components/League';
 import ErrorPage from './components/ErrorPage';
 import Timer from './components/Timer';
@@ -123,6 +126,9 @@ function App() {
             />}
           />
         <Route exact path="/profile" component={Profile} />
+        <Route exact path="/edit" component={Edit} />
+        <Route exact path="/password" component={Password} />
+        <Route exact path="/delete" component={Delete} />
         <Route exact path="/league" component={League} />
         <Route exact path="/error" component={ErrorPage} />
         <Route exact path="/timer" component={Timer} />

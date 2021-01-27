@@ -139,7 +139,6 @@ app.get('/selection', auth.isLoggedIn, async (req, res) => {
 });
 
 //quiz page - check if logged in
-
 app.get('/quiz', auth.isLoggedIn, (req, res) => {
     if(req.userFound) {
         res.json({
@@ -314,6 +313,62 @@ app.get('/profile', auth.isLoggedIn, async (req, res) => {
             message: "user not found"
         });
     };
+});
+
+//edit
+app.get('/edit', auth.isLoggedIn, (req, res) => {
+    res.json({
+        name: req.userFound.name,
+        email: req.userFound.email,
+    });
+});
+
+app.post('/edit', auth.isLoggedIn, async (req, res) => {
+    await User.findByIdAndUpdate(req.userFound._id, {
+        name: req.body.userName,
+        email: req.body.userEmail,
+    });
+    res.json({ //sending message to front-end
+        message: "User updated"
+    });
+});
+
+//edit password
+app.post('/password', auth.isLoggedIn, async (req, res) => {
+
+    const isMatch = await bcrypt.compare(req.body.userPassword, req.userFound.password );
+    if (isMatch) {
+        if (req.body.newPassword !== req.body.confPassword) {
+            res.json({ //sending message to front-end
+                message: "The passwords do not match"
+            });
+        } else {
+            const hashedPassword = await bcrypt.hash(req.body.newPassword, 13);
+            await User.findByIdAndUpdate(req.userFound._id, {
+                password: hashedPassword
+            });
+            res.json({ //sending message to front-end
+                message: "Password Updated"
+            });
+        }
+    } else {
+        res.json({ //sending message to front-end
+            message: "Password incorrect"
+        });
+    }
+});
+
+//delete
+app.get('/delete', auth.isLoggedIn, async (req, res) => {
+        await User.findByIdAndDelete(req.userFound._id);
+        const quiz = await Result.find({ user: req.userFound._id });
+        for (let i = 0; i < quiz.length; i++) {
+            await Result.findByIdAndDelete(quiz[i]._id);
+        };
+        console.log("quizzes have been deleted");
+        res.json({ //sending message to front-end
+            message: "User deleted"
+        });
 });
 
 //Pull data for League Component
