@@ -69,7 +69,7 @@ console.log(categories)
                         <option value="hard">Hard</option>
                     </select> <br />
                 </div>
-                <Link to = "/quiz" ><button id="generation" type="submit" >Generate Quiz</button></Link>
+                <Link to="/quiz" ><button id="generation" type="submit" >Generate Quiz</button></Link>
             </form>
             }
         </div>
