@@ -25,6 +25,7 @@ nav {
   justify-content: flex-end;
   position: fixed;
   z-index: 10;
+  text-align: center;
 }
 
 #nav-links {
@@ -51,6 +52,25 @@ a:visited {
 a:hover, a:focus {
   background: #E2E2E2;
 } 
+
+#quiz-top {
+  top: 1rem;
+  position: fixed;
+  z-index: 9;
+  background-color: #BBBAC6;
+  background-image: url('./assets/0-8123_white-sparkle-png.png');
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#quiz-body {
+  margin-top: 22rem;
+  background-color: #BBBAC6;
+  background-image: url('./assets/0-8123_white-sparkle-png.png');
+}
 
 form a:hover {
   background: none;
@@ -259,17 +279,12 @@ input .login, input .register {
   margin-bottom: 1rem;
 }
 
-#question-box {
-  margin-left: 2rem;
+#question {
   margin-top: 2rem;
   width: 60vw;
   background-color: #B7CECE;
   padding: 1rem 1rem 1rem 1rem;
   border: 2px solid #6E7E85;
-}
-
-#question {
-  margin-top: 2rem;
 }
 
 #quiz-info {
@@ -346,6 +361,10 @@ input .login, input .register {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+#answers input {
+  margin-right: 1rem;
 }
 
 @media screen and (max-width: 768px) {
@@ -464,7 +483,11 @@ input .login, input .register {
     text-align: start;
     margin-left: 0;
     margin-top: 0;
-    width: 80vw;
+    width: 90vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
   #question {
     margin-top: 0.5rem;
@@ -484,6 +507,17 @@ input .login, input .register {
   }
   #pwrd {
     padding-top: 2rem;
+  }
+  #quiz-top {
+    position: static;
+    z-index: 0;
+  }
+  #quiz-body {
+    margin-top: 0;
+    width: 100vw;
+  }
+  #answers input {
+    margin-right: 0.2rem;
   }
 }
 
