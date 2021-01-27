@@ -25,6 +25,7 @@ nav {
   justify-content: flex-end;
   position: fixed;
   z-index: 10;
+  text-align: center;
 }
 
 #nav-links {
@@ -482,7 +483,11 @@ input .login, input .register {
     text-align: start;
     margin-left: 0;
     margin-top: 0;
-    width: 80vw;
+    width: 90vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
   #question {
     margin-top: 0.5rem;
@@ -502,6 +507,17 @@ input .login, input .register {
   }
   #pwrd {
     padding-top: 2rem;
+  }
+  #quiz-top {
+    position: static;
+    z-index: 0;
+  }
+  #quiz-body {
+    margin-top: 0;
+    width: 100vw;
+  }
+  #answers input {
+    margin-right: 0.2rem;
   }
 }
 
