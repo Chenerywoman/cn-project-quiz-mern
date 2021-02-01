@@ -47,3 +47,7 @@ Dependencies for the project are:
 The website (https://coolors.co/) was used to provide a colour scheme for the webpage.  
 
 The website was styled with CSS and made responsive to different screen sizes using media queries.
+
+## Hosting
+
+The project is hosted with Heroku at https://the-quiz-of-awesomeness.herokuapp.com/
