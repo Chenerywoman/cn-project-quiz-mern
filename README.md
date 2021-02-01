@@ -1,6 +1,6 @@
 # Full Stack project using React 
 
-This is a Code Nation project to create a React website which fetches data from a quiz api and sends information about users and quiz scores to a database. We chose to use MongoDB.
+This is a project by [Kat Archer](https://github.com/Kat-Archer) and Rachel Chenery whilst students on the Code Nation Master Coding course.  It is a React website which fetches data from a quiz api and sends information about users and quiz scores to a database. We chose to use MongoDB.
 
 ## Project Brief
 
